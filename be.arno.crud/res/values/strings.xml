@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">be.arno.crud</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <!-- Activities Titles -->
+    <string name="title_activity_item_index">Items</string>
+    <string name="title_activity_item_new">New Item</string>
+    <string name="title_activity_item_list">List Items</string>
+    <string name="title_activity_item_show">Show Item</string>
+    <string name="title_activity_item_edit">Edit Item</string>
+    <string name="title_activity_item_search">Search Item(s)</string>
+    <string name="title_activity_test">TestActivity</string>
+
+    <!-- Item -->
+    <string name="item">Item</string>
+    <string name="items">Items</string>
+    <string name="items_found">Items found</string>
+    <string name="item_count">Item count</string>
+    <string name="id">ID</string>
+    <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="bool">Boolean</string>
+    <string name="item_created">Item created</string>
+    <string name="item_not_created">Item not created</string>
+    <string name="item_updated">Item updated</string>
+    <string name="item_not_updated">Item not updated</string>
+    <string name="item_deleted">Item deleted</string>
+    <string name="item_not_deleted">Item not deleted</string>
+
+    <!-- Buttons -->
+    <string name="NEW">New</string>
+    <string name="filter">Filter</string>
+    <string name="search">Search</string>
+    <string name="searchfor">Search for</string>
+    <string name="list">List</string>
+    <string name="show">Show</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="create">Create</string>
+    <string name="save">Save</string>
+    <string name="update">Update</string>
+    <string name="rating">Rating</string>
+    <string name="close">Close</string>
+    <string name="cancel">Cancel</string>
+    <string name="sureDelete">Delete this item ?</string>
+    <string name="test">Test</string>
+    <string name="fill">Fill</string>
+    <string name="deleteAll">Delete all</string>
+    <string name="previous">←</string>
+    <string name="next">→</string>
+    
+</resources>

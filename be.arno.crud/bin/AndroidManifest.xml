@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="be.arno.crud"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="18" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+            <!-- name = adresse physique -->
+            <!-- authorities = adresse française -->
+        <provider
+            android:name=".items.ItemContentProvider"
+        	android:authorities="be.arno.crud.ItemProvider"
+        	android:exported="true"
+        	/>
+        <activity
+            android:name="be.arno.crud.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemNewActivity"
+            android:label="@string/title_activity_item_new" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemListActivity"
+            android:label="@string/title_activity_item_list" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemShowActivity"
+            android:label="@string/title_activity_item_show" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemEditActivity"
+            android:label="@string/title_activity_item_edit" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.TestActivity"
+            android:label="@string/title_activity_test" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemIndexActivity"
+            android:label="@string/title_activity_item_index" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.items.ItemSearchActivity"
+            android:label="@string/title_activity_item_search" >
+        </activity>
+    </application>
+
+</manifest>
