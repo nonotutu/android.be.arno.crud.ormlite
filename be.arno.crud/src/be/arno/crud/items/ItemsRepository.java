@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.dao.Dao;
@@ -13,6 +14,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 
 public class ItemsRepository { // ORM
 	 
+	private static final String LOG_TAG = "ItemsRepository";
 	
     private ItemDBHelper db;
     Dao<Item, Integer> itemsDao;
@@ -30,7 +32,9 @@ public class ItemsRepository { // ORM
  
     }
     
+    // TODO : gérer codes retour
     public int create(Item item) {
+    	Log.i(LOG_TAG, "public int create(Item)");
         try {
             return itemsDao.create(item);
         } catch (SQLException e) {

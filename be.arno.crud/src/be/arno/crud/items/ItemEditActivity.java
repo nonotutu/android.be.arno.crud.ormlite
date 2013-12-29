@@ -126,7 +126,7 @@ public class ItemEditActivity extends Activity {
 		i.setDate  (date);
 		i.setRating(rtbrRating.getRating());
 		i.setBool  (tgbtBool.isChecked()?1:0);
-		i.setImage (((BitmapDrawable)imbtImage.getDrawable()).getBitmap() );
+		i.setImage (((BitmapDrawable)imbtImage.getDrawable()).getBitmap());
 		
 		ItemsRepository repos = new ItemsRepository(getApplicationContext());
 		return repos.update(i);

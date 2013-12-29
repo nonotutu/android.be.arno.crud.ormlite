@@ -4,6 +4,7 @@ package be.arno.crud.items;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 import be.arno.crud.App;
 import be.arno.crud.R;
@@ -24,6 +25,8 @@ import android.widget.Toast;
 
 public class ItemIndexActivity extends Activity {
 
+	private static final String LOG_TAG = "IdemIndexActivity";
+	
 	private TextView txvwCount;
 	
 	@Override
@@ -103,28 +106,12 @@ public class ItemIndexActivity extends Activity {
 				@Override
 				public boolean onLongClick(View v) {
 					
-					/*
-					ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
-					itemAdapter.openWritable();
-					int count = itemAdapter.getCount();
-					itemAdapter.close();
-					*/
-					//if ( count > 0 )
-						// Toast.makeText(getApplicationContext(), "Impossible to fill a non empty list.", Toast.LENGTH_LONG).show();
-					//else {
 						new Thread(
 							new Runnable() {
 								public void run() {
 									
-									ItemsRepository repos; // ORM
-								    repos = new ItemsRepository(getApplicationContext()); // ORM
-									fillWithPokemons(repos);
+									fillWithPokemons();
 
-								    /* -ORM
-									ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
-									itemAdapter.openWritable();
-									fillWithPokemons(itemAdapter);
-									itemAdapter.close();*/
 						}}).start();			
 						Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
 						onRestart();
@@ -139,9 +126,15 @@ public class ItemIndexActivity extends Activity {
 			new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					ItemsRepository repos; // ORM
-				    repos = new ItemsRepository(getApplicationContext()); // ORM
+					
+					ItemsRepository repos;
+				    repos = new ItemsRepository(getApplicationContext());
 					repos.deleteAll();
+					
+					ItemsServer server;
+					server = new ItemsServer(getApplicationContext());
+					server.delete(16923);
+					
 					onRestart();
 					return false;
 		}});
@@ -150,16 +143,23 @@ public class ItemIndexActivity extends Activity {
 	
 
 	
-	public void fillWithPokemons(ItemsRepository repos) {
+	public void fillWithPokemons() {
 		
-		//List<Item> items = new ArrayList<Item>();
+		ItemsRepository repos;
+	    repos = new ItemsRepository(getApplicationContext());
+
+	    ItemsServer server;
+	    server = new ItemsServer(getApplicationContext());
+		
 		Random rand = new Random();
+		
 		Item item;
 		
 		for (int j = 0; j < 1; j+=1 ) {
 		
 			int i = 0;
 			String mm, dd;
+			
 			while ( i < Pokemons.LIST.length ) {
 			
 			mm = "" + (rand.nextInt(12)+1);
@@ -176,27 +176,19 @@ public class ItemIndexActivity extends Activity {
 				String resid = "" + (i+1);
 				if ( resid.length() == 1 ) resid = "00" + resid;
 				if ( resid.length() == 2 ) resid = "0" + resid;
-				Log.i("fillWithPokemons", "p" + resid);
+				// Log.i("fillWithPokemons", "p" + resid);
 				int res = getResources().getIdentifier("p" + resid, "drawable", "be.arno.crud");
 				Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), res);
 				item.setImage(mBitmap);
-				/*
-				itemAdapter.insert(item);
-				*/
 				
-				//items.add(item);
-				
+				server.create(item);
 				repos.create(item);
 				
-				
-			// items.add(item);
-			
 			i+=1;
 			}
 		}
 
 		Log.i("static", "array filled");
-		//itemAdapter.insert(items);
 	}
 	
 	
