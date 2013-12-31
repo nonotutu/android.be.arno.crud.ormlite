@@ -46,10 +46,6 @@
             android:label="@string/title_activity_item_edit" >
         </activity>
         <activity
-            android:name="be.arno.crud.TestActivity"
-            android:label="@string/title_activity_test" >
-        </activity>
-        <activity
             android:name="be.arno.crud.items.ItemIndexActivity"
             android:label="@string/title_activity_item_index" >
         </activity>
@@ -57,6 +53,22 @@
             android:name="be.arno.crud.items.ItemSearchActivity"
             android:label="@string/title_activity_item_search" >
         </activity>
-    </application>
+        <activity
+            android:name="be.arno.crud.categories.CategoryIndexActivity"
+            android:label="@string/title_activity_category_index" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.categories.CategoryNewActivity"
+            android:label="@string/title_activity_category_new" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.categories.CategoryListActivity"
+            android:label="@string/title_activity_category_list" >
+        </activity>
+        <activity
+            android:name="be.arno.crud.categories.CategoryShowActivity"
+            android:label="@string/title_activity_category_show" >
+        </activity>
+        </application>
 
 </manifest>

@@ -24,10 +24,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class ItemListActivity extends Activity {
 
+	private static final String LOG_TAG = "ItemListActivity";
+	
+	private int categoryId;
+	
 	// Contiendra le texte et l'ID du filtre
 	private ListFilter listFilter;
 	
@@ -45,8 +50,9 @@ public class ItemListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i("Item/List", "onCreate");
 		setContentView(R.layout.activity_item_list);
+		
+		categoryId = getCategoryIdFromParams();
 		
 		txvwCount = (TextView)findViewById(R.id.itemList_txvwCount);
 		
@@ -81,7 +87,6 @@ public class ItemListActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Item item = (Item)lsvwList.getItemAtPosition(position);
-				Log.i("Item/List/ListView", "OnItemClick - item id: " + item.getId());
 				Intent intent = new Intent(getApplicationContext(), ItemShowActivity.class);
 				intent.putExtra("ID", "" + item.getId());
 
@@ -104,7 +109,6 @@ public class ItemListActivity extends Activity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Item item = (Item)lsvwList.getItemAtPosition(position);
-				Log.i("Item/List/ListView", "OnItemLongClick - item id: " + item.getId());
 				new AlertDialog.Builder(ItemListActivity.this).setMessage("ID: "+item.getId()).show();
 				return true;
 			}});
@@ -122,7 +126,6 @@ public class ItemListActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i("Item/List", "onStart");
 		fillList(getList());
 	}
 
@@ -149,7 +152,7 @@ public class ItemListActivity extends Activity {
 				// items = itemAdapter.getOnlyBool(0); -ORM
 				break;
 			default:
-				items = (ArrayList<Item>) repos.getAllLight(); // ORM
+				items = (ArrayList<Item>) repos.getAllLight(categoryId); // ORM
 				//items = itemAdapter.getAllLight(); -ORM
 				break;
 			}
@@ -218,4 +221,18 @@ public class ItemListActivity extends Activity {
         filterListArrayAdapter.add(new ListFilter("Booléen Oui", 2));
         filterListArrayAdapter.add(new ListFilter("Booléen Non", 3));
 	}
+	
+	
+
+	private int getCategoryIdFromParams() {
+
+		Bundle extra = this.getIntent().getExtras();
+		if ( extra != null ) {
+			return extra.getInt("CATEGORY_ID");
+		}
+		
+		return -1;
+	}
+
+	
 }

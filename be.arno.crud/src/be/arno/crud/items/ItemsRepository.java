@@ -6,6 +6,8 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import be.arno.crud.DatabaseManager;
+import be.arno.crud.CatemDBHelper;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.dao.Dao;
@@ -16,9 +18,10 @@ public class ItemsRepository { // ORM
 	 
 	private static final String LOG_TAG = "ItemsRepository";
 	
-    private ItemDBHelper db;
+    private CatemDBHelper db;
     Dao<Item, Integer> itemsDao;
  
+    
     
     public ItemsRepository(Context context) {
         try {
@@ -31,6 +34,7 @@ public class ItemsRepository { // ORM
         }
  
     }
+    
     
     // TODO : gérer codes retour
     public int create(Item item) {
@@ -114,6 +118,16 @@ public class ItemsRepository { // ORM
     	} catch (SQLException e) {}
     	return 0;
     }
+   
+    
+    
+    public long getCount(int categoryId) {
+    	try {
+    		return itemsDao.queryBuilder().where().eq(Item.COLUMN_CATEGORY_ID, categoryId).countOf();
+    	} catch (SQLException e) {}
+    	return 0;
+    }
+    
     
     public Cursor getCursorAllLight() { // for ORM
     	/* PUTIN !
@@ -167,7 +181,17 @@ public class ItemsRepository { // ORM
         }
         return null;
     }
-    
+
+    public List<Item> getAllLight(int categoryId) {
+        try {
+            return getRawAllLight().where().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
+        } catch (SQLException e) {
+            // TODO: Exception Handling
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     
     public List<Item> getSearchBetweenDatesLight(String searchLow, String searchMax) {
         try {
@@ -205,6 +229,7 @@ public class ItemsRepository { // ORM
         }
         return null;
     }
+    
 
     public List<Item> getSearchOnNameLight(String searchName) {
         try {
@@ -236,7 +261,6 @@ public class ItemsRepository { // ORM
 
     public List<Item> getOnlyBoolLight(int bool) {
         try {
-            // Cursor c = db.query(TABLE_ITEMS, ALL_COLUMNS, "bool = ?", new String[] {""+bool}, null, null, null);
             return itemsDao.queryBuilder()
             		.selectColumns(Item.COLUMN_NAME,
 					   		       Item.COLUMN_DATE,

@@ -12,15 +12,20 @@
     <string name="title_activity_item_show">Show Item</string>
     <string name="title_activity_item_edit">Edit Item</string>
     <string name="title_activity_item_search">Search Item(s)</string>
-    <string name="title_activity_test">TestActivity</string>
-
+    <string name="title_activity_category_index">Categories</string>
+    <string name="title_activity_category_new">New Category</string>
+    <string name="title_activity_category_list">List Items</string>
+    <string name="title_activity_category_show">List Items</string>
+    
+    <!-- ALL -->
+    <string name="id">ID</string>
+    <string name="name">Name</string>    
+    
     <!-- Item -->
     <string name="item">Item</string>
     <string name="items">Items</string>
     <string name="items_found">Items found</string>
     <string name="item_count">Item count</string>
-    <string name="id">ID</string>
-    <string name="name">Name</string>
     <string name="date">Date</string>
     <string name="bool">Boolean</string>
     <string name="item_created">Item created</string>
@@ -29,7 +34,16 @@
     <string name="item_not_updated">Item not updated</string>
     <string name="item_deleted">Item deleted</string>
     <string name="item_not_deleted">Item not deleted</string>
-
+    
+    <!-- Category -->
+    <string name="category">Category</string>
+    <string name="categories">Categories</string>
+    <string name="categories_found">Categories found</string>
+    <string name="category_count">Category count</string>
+    <string name="category_created">Item created</string>
+    <string name="category_not_created">Item not created</string>
+    <string name="category_does_not_exist">Category doesn\'t exist</string>
+    
     <!-- Buttons -->
     <string name="NEW">New</string>
     <string name="filter">Filter</string>

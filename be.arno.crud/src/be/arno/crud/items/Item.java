@@ -15,21 +15,24 @@ public class Item {
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_DATE = "date";
 	public static final String COLUMN_BOOL = "bool";
+	public static final String COLUMN_CATEGORY_ID = "_category_id";
 		
-	@DatabaseField(generatedId = true)	// ORM
+	@DatabaseField(generatedId = true)
 	private int _id;
-	@DatabaseField	// ORM
+	@DatabaseField
+	private int _category_id;
+	@DatabaseField
 	private String name;
-	@DatabaseField // ORM
+	@DatabaseField
 	private String date;
-	@DatabaseField	// ORM
+	@DatabaseField
 	private float rating;
-	@DatabaseField	// ORM
+	@DatabaseField
 	private int bool;
-	@DatabaseField(dataType=DataType.BYTE_ARRAY)	// ORM
-	private byte[] image; // ORM
-	// private Bitmap image; // -ORM
+	@DatabaseField(dataType=DataType.BYTE_ARRAY)
+	private byte[] image;
 
+	
 	public Item() {}
 
 	
@@ -43,8 +46,6 @@ public class Item {
 		}
 		this.image = byteArray;
 	}
-	
-	
 	public Bitmap getImage() {
 		if ( this.image != null ) {
 			// TODO : comprendre
@@ -63,6 +64,7 @@ public class Item {
 		this.bool = bool;
 	}
 	
+	
 	public String getName() {
 		return name;
 	}
@@ -70,6 +72,7 @@ public class Item {
 		this.name = name;
 	}
 
+	
 	public int getDatePart(String part) {
 		String s = null;
 		int i;
@@ -84,13 +87,13 @@ public class Item {
 		i = Integer.parseInt(s);
 		return i;
 	}
-	
 	public String getDate() {
 		return date;
 	}
 	public void setDate(String date) {
 		this.date = date;
 	}
+	
 
 	public int getId() {
 		return this._id;
@@ -98,6 +101,15 @@ public class Item {
 	public void setId(int id) {
 		this._id = id;
 	}
+	
+	
+	public int getCategoryId() {
+		return this._category_id;
+	}
+	public void setCategory(int categoryId) {
+		this._category_id = categoryId;
+	}
+	
 
 	public float getRating() {
 		return this.rating;
@@ -108,6 +120,7 @@ public class Item {
 		this.rating = rating;
 	}
 
+	
 	public String getCharedRating() {
 		int i = (int) (this.rating * 2);
 		switch(i) {
@@ -138,10 +151,12 @@ public class Item {
 		}
 	}
 	
+	
 	public String toString() {
 		String s = this.name + " :: " + this.getCharedRating();
 		return s;
 	}
+	
 	
 	public boolean isValid() {
 		if ( this.name.isEmpty() || this.name == null )
@@ -150,4 +165,5 @@ public class Item {
 			return false;
 	return true;
 	}	
+	
 }

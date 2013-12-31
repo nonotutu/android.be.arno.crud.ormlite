@@ -1,29 +1,43 @@
 package be.arno.crud;
 
+import java.util.Random;
+
 import be.arno.crud.R;
+import be.arno.crud.categories.CategoriesRepository;
+import be.arno.crud.categories.CategoryIndexActivity;
+import be.arno.crud.items.Item;
 import be.arno.crud.items.ItemIndexActivity;
+import be.arno.crud.items.ItemsRepository;
+import be.arno.crud.items.Pokemons;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
+
+	private static final String LOG_TAG = "MainActivity";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Button bttnItems = (Button)findViewById(R.id.main_bttnItems);
+		Button bttnCategories = (Button)findViewById(R.id.main_bttnCategories);
 		Button bttnClose = (Button)findViewById(R.id.main_bttnClose);
 		
-		bttnItems.setOnClickListener(new OnClickListener() {
+		bttnCategories.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(getApplicationContext(), ItemIndexActivity.class);
+				Intent i = new Intent(getApplicationContext(), CategoryIndexActivity.class);
 				startActivity(i);
 			}
 		});
@@ -35,40 +49,101 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		/**
-		
-		ImageView imvw = (ImageView)findViewById(R.id.main_imvwImage);
-		imvw.setScaleType(ScaleType.FIT_XY);
-		
 
+		Button bttnFill = (Button)findViewById(R.id.main_bttnFillDB);		
+		bttnFill.setOnLongClickListener(
+			new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
 
-		Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.p001);
-		
-		Item item = new Item();
-		item.setName("Arnaud");
-		item.setImage(mBitmap);
-		
-		ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
-		itemAdapter.openWritable();
+						new Thread(
+							new Runnable() {
+								public void run() {
+									
+									fillWithPokemons();
 
-		itemAdapter.insert(item);
-		
-		itemAdapter.close();
+						}}).start();			
+						Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
+						onRestart();
+					//}
 
-		/**
+					return false;
+		}});
 		
-		ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
+		// VFEC
+		Button bttnDeleteAll = (Button)findViewById(R.id.main_bttnClearDB);		
+		bttnDeleteAll.setOnLongClickListener(
+			new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
 
-		itemAdapter.openReadable();
-		
-		Item item = itemAdapter.getFirst();
-		
-		Log.i("item", item.getName());
-		Log.i("item", item.getImage().toString());
+					Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
+					
+					ItemsRepository repos;
+				    repos = new ItemsRepository(getApplicationContext());
+					repos.deleteAll();
+			
+					onRestart();
+					return false;
+		}});
 
-		imvw.setImageBitmap(item.getImage());
-		
-		itemAdapter.close();
-		*/
 	}
+	
+
+	
+	public void fillWithPokemons() {
+		
+		CategoriesRepository categsRepos;
+	    categsRepos = new CategoriesRepository(getApplicationContext());
+		
+	    int[] categs = categsRepos.getAllIds();
+	    
+		ItemsRepository itemsRepos;
+	    itemsRepos = new ItemsRepository(getApplicationContext());
+
+	    // ItemsServer server;
+	    // server = new ItemsServer(getApplicationContext());
+		
+		Random rand = new Random();
+		
+		Item item;
+		
+		for (int j = 0; j < 1; j+=1 ) {
+		
+			int i = 0;
+			int cat;
+			String mm, dd;
+			
+			while ( i < Pokemons.LIST.length ) {
+			
+			mm = "" + (rand.nextInt(12)+1); if (mm.length() < 2) mm = "0" + mm;
+			dd = "" + (rand.nextInt(28)+1); if (dd.length() < 2) dd = "0" + dd;
+
+			cat = categs[rand.nextInt(categs.length)];
+			
+			item = new Item();
+				item.setName(Pokemons.LIST[i]);
+				item.setDate((rand.nextInt(2100-1900)+1900) + "-" + mm + "-" + dd);
+				item.setRating((rand.nextInt(10)+1)/Float.parseFloat("2.0"));
+				item.setBool(rand.nextInt(2));
+				item.setCategory(cat);
+				String resid = "" + (i+1);
+				if ( resid.length() == 1 ) resid = "00" + resid;
+				if ( resid.length() == 2 ) resid = "0" + resid;
+				// Log.i("fillWithPokemons", "p" + resid);
+				int res = getResources().getIdentifier("p" + resid, "drawable", "be.arno.crud");
+				Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), res);
+				item.setImage(mBitmap);
+				
+				// server.create(item);
+				itemsRepos.create(item);
+				
+			i+=1;
+			}
+		}
+
+		Log.i("static", "array filled");
+	}
+	
+		
 }

@@ -9,7 +9,7 @@ public class App extends Application {
 	//MyApplication which extends Application like so:
 
 		
-	/*
+	
 	// Utile pour : - récupérer le context dans une classe statique
 	//				- ?
 	
@@ -21,7 +21,7 @@ public class App extends Application {
         mContext = this;
     }
 
-    public static Context getContext(){
+    public static Context getContext() {
         return mContext;
-    }*/
+    }
 }

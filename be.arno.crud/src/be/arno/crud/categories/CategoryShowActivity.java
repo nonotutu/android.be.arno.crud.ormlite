@@ -1,10 +1,11 @@
-package be.arno.crud.items;
+package be.arno.crud.categories;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import be.arno.crud.R;
 import be.arno.crud.myApp;
+import be.arno.crud.items.ItemListActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -24,58 +25,48 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class ItemShowActivity extends Activity {
+public class CategoryShowActivity extends Activity {
 
-	private Item item;
+	private Category category;
 
 	private TextView txvwId;
-	private TextView txvwCategory;
 	private TextView txvwName;
-	private TextView txvwDate;
-	private RatingBar rtbrRating;
-	private TextView txvwBool;
+	private TextView txvwItemsCount;
 	private SeekBar skbrPosition;
 	private TextView txvwPosition;
-	private ImageView imvwImage;
 	private ArrayList<Integer> ids;
 	private int last;
 
-	
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch(requestCode) {
-		case myApp.CODE_ACTIVITY_EDIT_ITEM:
-			switch(resultCode) {
-			case RESULT_OK:
-				// refresh if updated
-				getItemFromDB(item.getId());
-				fillFields();
-				break;
-			default:
-				break;
-			}
-			break;
-		default:
-			break;
-		}
+	// TODO : retirer le start activity for result de Item
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		fillFields();
 	}
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_item_show);
+		setContentView(R.layout.activity_category_show);
 
-		txvwId =       (TextView) findViewById(R.id.itemShow_txvwId);
-		txvwCategory = (TextView) findViewById(R.id.itemShow_txvwCategory);
-		txvwName =     (TextView) findViewById(R.id.itemShow_txvwName);
-		txvwDate =     (TextView) findViewById(R.id.itemShow_txvwDate);
-		rtbrRating =   (RatingBar)findViewById(R.id.itemShow_rtbrRating);
-		txvwBool =     (TextView) findViewById(R.id.itemShow_txvwBool);
-		skbrPosition = (SeekBar)  findViewById(R.id.itemShow_skbrPosition);
-		txvwPosition = (TextView) findViewById(R.id.itemShow_txvwPosition);
-		imvwImage =    (ImageView)findViewById(R.id.itemShow_imvwImage);
+		txvwId =         (TextView) findViewById(R.id.categoryShow_txvwId);
+		txvwName =       (TextView) findViewById(R.id.categoryShow_txvwName);
+		txvwItemsCount = (TextView) findViewById(R.id.categoryShow_txvwItemsCount);
+		skbrPosition =   (SeekBar)  findViewById(R.id.categoryShow_skbrPosition);
+		txvwPosition =   (TextView) findViewById(R.id.categoryShow_txvwPosition);
 		
-		Button bttnDelete = (Button)findViewById(R.id.itemShow_bttnDelete);
+		Button bttnItems = (Button)findViewById(R.id.categoryShow_bttnItems);
+		bttnItems.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+				intent.putExtra("CATEGORY_ID", category.getId() );
+				startActivity(intent);
+			}
+		});
+		
+		Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -84,35 +75,35 @@ public class ItemShowActivity extends Activity {
 			}
 		});
 
-		Button bttnEdit = (Button)findViewById(R.id.itemShow_bttnEdit);
+		Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
 		bttnEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(getApplicationContext(), ItemEditActivity.class);
-				i.putExtra("ID", "" + item.getId() );
-				startActivityForResult(i, myApp.CODE_ACTIVITY_EDIT_ITEM);
+				// Intent intent = new Intent(getApplicationContext(), CategoryEditActivity.class);
+				// intent.putExtra("ID", "" + category.getId() );
+				// startActivity(intent);
 			}
 		});
 
-		Button bttnPrev = (Button)findViewById(R.id.itemShow_bttnPrev);
+		Button bttnPrev = (Button)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if ( last > 0 ) {
 					last = last - 1;
-					getItemFromDB(ids.get(last));
+					getCategoryFromDB(ids.get(last));
 					fillFields();
 				}
 			}
 		});
 
-		Button bttnNext = (Button)findViewById(R.id.itemShow_bttnNext);
+		Button bttnNext = (Button)findViewById(R.id.categoryShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if ( last < ids.size()-1 ) {
 					last = last + 1;
-					getItemFromDB(ids.get(last));
+					getCategoryFromDB(ids.get(last));
 					fillFields();
 				}
 			}
@@ -123,7 +114,7 @@ public class ItemShowActivity extends Activity {
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {
 					last = seekBar.getProgress();
-					getItemFromDB(ids.get(last));
+					getCategoryFromDB(ids.get(last));
 					fillFields();
 				}
 				@Override
@@ -142,7 +133,7 @@ public class ItemShowActivity extends Activity {
 		skbrPosition.setMax(ids.size()-1);
 
 		// récupérer l'item de la DB
-		getItemFromDB(id);
+		getCategoryFromDB(id);
 
 		// afficher les informations
 		fillFields();
@@ -150,10 +141,10 @@ public class ItemShowActivity extends Activity {
 	}
 
 
-	private void deleteItem() {
+	private void deleteCategory() {
 		
-		ItemsRepository repos = new ItemsRepository(getApplicationContext());
-		repos.delete(item);
+		CategoriesRepository repos = new CategoriesRepository(getApplicationContext());
+		repos.delete(category);
 	
 		// TODO : vérifier si supprimé
 		finish();
@@ -183,31 +174,24 @@ public class ItemShowActivity extends Activity {
 	}
 
 
-	private void getItemFromDB(int id) {
+	private void getCategoryFromDB(int id) {
 		
-		ItemsRepository repos; // ORM
-
-		//init the comments repository
-        repos = new ItemsRepository(this); // ORM
-        //get all comments
-        item = repos.getItemById(id); // ORM
+		CategoriesRepository repos;
+        repos = new CategoriesRepository(this);
+        category = repos.getCategoryById(id);
 		
 	}
 
 
 	private void fillFields() {
-		if ( item != null ) {		
-			txvwId.setText(""+item.getId());
-			txvwCategory.setText(""+item.getCategoryId());
-			txvwName.setText(item.getName());
-			txvwDate.setText(item.getDate());
-			rtbrRating.setRating(item.getRating());
-			txvwBool.setText(""+item.getBool());
-			imvwImage.setImageBitmap(item.getImage());
+		if ( category != null ) {		
+			txvwId.setText(""+category.getId());
+			txvwName.setText(category.getName());
+			txvwItemsCount.setText(""+category.getCountItems());
 			skbrPosition.setProgress(last);
 			txvwPosition.setText( " " + (last+1) + " / " + ids.size() + " ");
 		} else {
-			Toast.makeText(getApplicationContext(), "Item doesn't exist", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "@string/category_does_not_exist", Toast.LENGTH_LONG).show();
 			finish();
 		}
 	}
@@ -221,8 +205,7 @@ public class ItemShowActivity extends Activity {
 		.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					deleteItem();
-					//Toast.makeText(getApplicationContext(), "Cliqué", Toast.LENGTH_LONG).show();
+					deleteCategory();
 				}
 			})
 		.create();

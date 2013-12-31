@@ -9,21 +9,39 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/main_bttnClose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnItems"
-        android:text="@string/close" />
-
-    <Button
-        android:id="@+id/main_bttnItems"
+        android:id="@+id/main_bttnCategories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/items" />
-
+        android:text="@string/categories" />
+	
+	<Button
+        android:id="@+id/main_bttnFillDB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/main_bttnCategories"
+        android:text="Fill Database" />
+    
+	<Button
+        android:id="@+id/main_bttnClearDB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/main_bttnFillDB"
+        android:text="Clear Database" />
+	
+	<Button
+        android:id="@+id/main_bttnClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/main_bttnClearDB"
+        android:text="@string/close" />
+	
 </RelativeLayout>
