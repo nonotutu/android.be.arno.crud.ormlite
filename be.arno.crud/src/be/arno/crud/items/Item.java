@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 @DatabaseTable(tableName = "items")	// ORM
 public class Item {
 
+	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_DATE = "date";
 	public static final String COLUMN_BOOL = "bool";

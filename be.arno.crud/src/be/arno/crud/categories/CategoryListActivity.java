@@ -64,7 +64,7 @@ public class CategoryListActivity extends Activity {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Category category = (Category)lsvwList.getItemAtPosition(position);
 				Intent intent = new Intent(getApplicationContext(), CategoryShowActivity.class);
-				intent.putExtra("ID", "" + category.getId());
+				intent.putExtra("ID", category.getId());
 
 				// TODO : mettre ailleurs
 				ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -85,7 +85,7 @@ public class CategoryListActivity extends Activity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Category category = (Category)lsvwList.getItemAtPosition(position);
-				new AlertDialog.Builder(CategoryListActivity.this).setMessage("ID: "+category.getId()).show();
+				new AlertDialog.Builder(CategoryListActivity.this).setMessage("@string/item_count"+category.getCountItems()).show();
 				return true;
 			}});
 		

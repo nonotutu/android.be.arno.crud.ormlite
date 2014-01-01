@@ -66,14 +66,16 @@ public class ItemsServer {
     }
     
     
+    // TODO : je ne sais pas si c'est bien de faire comme ça ?
     public int delete(Item item) {
+    	delete(item.getId());
     	return 0;
     }
 
     
     public long delete(long id) {
 
-    	Log.i(LOG_TAG, "public Long delete(long)");
+    	Log.i(LOG_TAG, "public Long delete(long id)");
 
     	AST_deleteItem task = new AST_deleteItem();
 		task.execute(id);
@@ -83,7 +85,7 @@ public class ItemsServer {
 		try { result = task.get(); }
 		catch (Exception e) { e.printStackTrace(); }
 
-		Log.i(LOG_TAG, "public Long delete(long) result: " + result);
+		Log.i(LOG_TAG, "public Long delete(long id) return: " + result);
 
 		return result;
     }

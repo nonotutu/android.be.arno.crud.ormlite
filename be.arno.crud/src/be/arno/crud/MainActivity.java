@@ -55,16 +55,23 @@ public class MainActivity extends Activity {
 			new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-
+					
+					CategoriesRepository categoriesRepos;
+				    categoriesRepos = new CategoriesRepository(getApplicationContext());
+					
+				    if ( categoriesRepos.getCount() > 0 ) {
 						new Thread(
 							new Runnable() {
 								public void run() {
-									
 									fillWithPokemons();
-
 						}}).start();			
 						Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
 						onRestart();
+				    } else {
+						Toast.makeText(getApplicationContext(), "There must be at least 1 Category to insert Items.", Toast.LENGTH_LONG).show();
+				    }
+				    
+						
 					//}
 
 					return false;
@@ -78,10 +85,14 @@ public class MainActivity extends Activity {
 				public boolean onLongClick(View v) {
 
 					Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
-					
-					ItemsRepository repos;
-				    repos = new ItemsRepository(getApplicationContext());
-					repos.deleteAll();
+					new Thread(
+						new Runnable() {
+							public void run() {
+								ItemsRepository itemsRepository = new ItemsRepository(getApplicationContext());
+								itemsRepository.deleteAll();
+								CategoriesRepository categoriesRepository = new CategoriesRepository(getApplicationContext());
+								categoriesRepository.deleteAll();
+					}}).start();
 			
 					onRestart();
 					return false;

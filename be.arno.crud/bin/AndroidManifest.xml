@@ -69,6 +69,10 @@
             android:name="be.arno.crud.categories.CategoryShowActivity"
             android:label="@string/title_activity_category_show" >
         </activity>
+        <activity
+            android:name="be.arno.crud.categories.CategoryEditActivity"
+            android:label="@string/title_activity_category_edit" >
+        </activity>
         </application>
 
 </manifest>

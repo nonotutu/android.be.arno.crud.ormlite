@@ -34,7 +34,7 @@ public class Category {
 	}
 
 	public String toString() {
-		String s = this.name + " :: " + getCountItems();
+		String s = this.name;
 		return s;
 	}
 	

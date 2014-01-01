@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 
 import be.arno.crud.App;
 import be.arno.crud.R;
+import be.arno.crud.items.ItemsRepository;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -28,6 +29,7 @@ public class CategoryIndexActivity extends Activity {
 	private static final String LOG_TAG = "CategoryIndexActivity";
 	
 	private TextView txvwCount;
+	private TextView txvwItemsCount;
 	
 	@Override
 	protected void onRestart() {
@@ -36,10 +38,10 @@ public class CategoryIndexActivity extends Activity {
 	}
 	
 	private void setCount() {
-		CategoriesRepository repos;
-        repos = new CategoriesRepository(this);
-        long count = repos.getCount();
-		txvwCount.setText(""+count);
+		CategoriesRepository categoriesRepository = new CategoriesRepository(this);
+		txvwCount.setText(""+categoriesRepository.getCount());
+		ItemsRepository itemsRepository = new ItemsRepository(this);
+		txvwItemsCount.setText(""+itemsRepository.getCount());
 	}
 	
 	@Override
@@ -48,6 +50,7 @@ public class CategoryIndexActivity extends Activity {
 		setContentView(R.layout.activity_category_index);
 
 		txvwCount = (TextView)findViewById(R.id.categoryIndex_txvwCount);
+		txvwItemsCount = (TextView)findViewById(R.id.categoryIndex_txvwItemsCount);
 	
 		setCount();
 		

@@ -14,8 +14,9 @@
     <string name="title_activity_item_search">Search Item(s)</string>
     <string name="title_activity_category_index">Categories</string>
     <string name="title_activity_category_new">New Category</string>
-    <string name="title_activity_category_list">List Items</string>
-    <string name="title_activity_category_show">List Items</string>
+    <string name="title_activity_category_list">List Categories</string>
+    <string name="title_activity_category_show">Show Category</string>
+    <string name="title_activity_category_edit">Edit Category</string>
     
     <!-- ALL -->
     <string name="id">ID</string>

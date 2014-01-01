@@ -8,15 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".CategoryIndexActivity" >
 
-    <Button
-        android:id="@+id/categoryIndex_bttnList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/categoryIndex_bttnNew"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/list" />
-
     <TextView
         android:id="@+id/categoryIndex_txvwCountLabel"
         android:layout_width="wrap_content"
@@ -36,6 +27,34 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="64sp" />
 
+	<TextView
+        android:id="@+id/categoryIndex_txvwItemsCountLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/categoryIndex_txvwCount"
+        android:text="@string/item_count"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/categoryIndex_txvwItemsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/categoryIndex_txvwItemsCountLabel"
+        android:layout_centerHorizontal="true"
+        android:text="#"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="64sp" />
+    
+	<Button
+        android:id="@+id/categoryIndex_bttnList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/categoryIndex_bttnNew"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/list" />
+    
     <Button
         android:id="@+id/categoryIndex_bttnNew"
         android:layout_width="match_parent"

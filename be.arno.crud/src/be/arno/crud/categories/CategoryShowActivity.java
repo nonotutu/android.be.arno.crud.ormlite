@@ -24,26 +24,27 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// TODO : gérer les starts, restarts et fillFields;
 
 public class CategoryShowActivity extends Activity {
 
 	private Category category;
+	private ArrayList<Integer> ids;
+	private int last;
 
 	private TextView txvwId;
 	private TextView txvwName;
 	private TextView txvwItemsCount;
 	private SeekBar skbrPosition;
 	private TextView txvwPosition;
-	private ArrayList<Integer> ids;
-	private int last;
-
+	
 	// TODO : retirer le start activity for result de Item
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 		fillFields();
 	}
-
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,30 +61,33 @@ public class CategoryShowActivity extends Activity {
 		bttnItems.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
-				intent.putExtra("CATEGORY_ID", category.getId() );
-				startActivity(intent);
-			}
-		});
+				if ( category != null ) {		
+					Intent intent = new Intent(getApplicationContext(), ItemListActivity.class);
+					intent.putExtra("CATEGORY_ID", category.getId() );
+					startActivity(intent);
+				}
+			}});
 		
 		Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Dialog d = askConfirmation();
-				d.show();
-			}
-		});
+				if ( category != null ) {		
+					Dialog d = askConfirmation();
+					d.show();
+				}
+		}});
 
 		Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
 		bttnEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// Intent intent = new Intent(getApplicationContext(), CategoryEditActivity.class);
-				// intent.putExtra("ID", "" + category.getId() );
-				// startActivity(intent);
-			}
-		});
+				if ( category != null ) {		
+					Intent intent = new Intent(getApplicationContext(), CategoryEditActivity.class);
+					intent.putExtra("ID", category.getId() );
+					startActivity(intent);
+				}
+		}});
 
 		Button bttnPrev = (Button)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
@@ -93,9 +97,7 @@ public class CategoryShowActivity extends Activity {
 					last = last - 1;
 					getCategoryFromDB(ids.get(last));
 					fillFields();
-				}
-			}
-		});
+		}}});
 
 		Button bttnNext = (Button)findViewById(R.id.categoryShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
@@ -105,9 +107,7 @@ public class CategoryShowActivity extends Activity {
 					last = last + 1;
 					getCategoryFromDB(ids.get(last));
 					fillFields();
-				}
-			}
-		});
+		}}});
 
 		skbrPosition.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
@@ -127,17 +127,18 @@ public class CategoryShowActivity extends Activity {
 			});
 
 
-		// récupérer l'ID / IDS / LAST dans le Bundle
+		// récupérer l'ID dans le Bundle
 		int id = getIdFromParams();
-
-		skbrPosition.setMax(ids.size()-1);
-
 		// récupérer l'item de la DB
 		getCategoryFromDB(id);
-
-		// afficher les informations
-		fillFields();
 		
+		// récupérer les infos de liste (LAST & IDS)
+		getParams();
+		
+		skbrPosition.setMax(ids.size()-1);
+		
+		fillFields();
+
 	}
 
 
@@ -151,26 +152,24 @@ public class CategoryShowActivity extends Activity {
 	}
 
 
-	private int getIdFromParams() {
-
-		String strId = null;
-		int intId;
-
+	private void getParams() {
 		Bundle extra = this.getIntent().getExtras();
 		if ( extra != null ) {
-			strId = extra.getString("ID");
 			ids = extra.getIntegerArrayList("IDS");
+			ids.add(0);
 			last = extra.getInt("LAST");
 		}
-		try {
-			intId = Integer.parseInt(strId);
-			return intId;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			Toast.makeText(getApplicationContext(), "Not an integer", Toast.LENGTH_LONG).show();
-			finish();
+	}
+	
+	
+	private int getIdFromParams() {
+
+		int id = -1;
+		Bundle extra = this.getIntent().getExtras();
+		if ( extra != null ) {
+			id = extra.getInt("ID");
 		}
-		return -1;
+		return id;
 	}
 
 
@@ -191,9 +190,18 @@ public class CategoryShowActivity extends Activity {
 			skbrPosition.setProgress(last);
 			txvwPosition.setText( " " + (last+1) + " / " + ids.size() + " ");
 		} else {
-			Toast.makeText(getApplicationContext(), "@string/category_does_not_exist", Toast.LENGTH_LONG).show();
-			finish();
+			clearFields();
+			Toast.makeText(getApplicationContext(), R.string.category_does_not_exist, Toast.LENGTH_SHORT).show();
+			// finish();
 		}
+	}
+
+	private void clearFields() {
+		txvwId.setText("");
+		txvwName.setText("");
+		txvwItemsCount.setText("");
+		skbrPosition.setProgress(last);
+		txvwPosition.setText( " " + (last+1) + " / " + ids.size() + " ");
 	}
 
 

@@ -11,6 +11,7 @@ import be.arno.crud.CatemDBHelper;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -59,7 +60,6 @@ public class ItemsRepository { // ORM
         return 0;
     }
     
-    
     public int delete(Item item) {
         try {
             return itemsDao.delete(item);
@@ -71,7 +71,7 @@ public class ItemsRepository { // ORM
     }
 
     
-    public int delete(int id) { // for ORM
+    public int delete(int id) {
         try {
             return itemsDao.deleteById(id);
         } catch (SQLException e) {
@@ -106,12 +106,22 @@ public class ItemsRepository { // ORM
     
     public int deleteAll() {
     	try {
-    		 itemsDao.delete(itemsDao.deleteBuilder().prepare());
-    	} catch (SQLException e) {}
+    		itemsDao.delete(itemsDao.deleteBuilder().prepare());
+		} catch (SQLException e) {}
     	return 0;
     }
-
     
+    
+    public int deleteAll(int categoryId) {
+    	try {
+    		DeleteBuilder<Item, Integer> deleteBuilder = itemsDao.deleteBuilder();
+    		deleteBuilder.where().eq(Item.COLUMN_CATEGORY_ID, categoryId);
+    		deleteBuilder.delete();
+		} catch (SQLException e) {}
+    	return 0;
+    }
+    		
+
     public long getCount() {
     	try {
     		return itemsDao.countOf();
@@ -120,10 +130,9 @@ public class ItemsRepository { // ORM
     }
    
     
-    
     public long getCount(int categoryId) {
     	try {
-    		return itemsDao.queryBuilder().where().eq(Item.COLUMN_CATEGORY_ID, categoryId).countOf();
+    		return itemsDao.queryBuilder().selectColumns(Item.COLUMN_ID).where().eq(Item.COLUMN_CATEGORY_ID, categoryId).countOf();
     	} catch (SQLException e) {}
     	return 0;
     }
@@ -153,7 +162,6 @@ public class ItemsRepository { // ORM
     public Cursor getCursorItemById(int id) { // for ORM
     	Cursor c = null;
     	try {
-    		//AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(itemsDao.queryBuilder().where().idEq(id).prepare()).getRawResults();
     		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(itemsDao.queryBuilder().selectColumns(Item.COLUMN_NAME, Item.COLUMN_DATE, Item.COLUMN_BOOL).where().idEq(id).prepare()).getRawResults();
 			c = adr.getRawCursor();
 		} catch (Exception e) { // SQLException

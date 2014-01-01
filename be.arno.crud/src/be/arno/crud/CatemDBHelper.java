@@ -24,10 +24,10 @@ public class CatemDBHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "catems";
     private static final int DATABASE_VERSION = 1;
 
-	private Dao<Item, Integer>     itemsDao      = null;	// ORM
-	private Dao<Category, Integer> categoriesDao = null;	// ORM
-    private RuntimeExceptionDao<Item, Integer>     itemsRuntimeDao = null;	// ORM
-    private RuntimeExceptionDao<Category, Integer> categoriesRuntimeDao = null;	// ORM
+	private Dao<Item, Integer>     itemsDao      = null;
+	private Dao<Category, Integer> categoriesDao = null;
+    private RuntimeExceptionDao<Item, Integer>     itemsRuntimeDao = null;
+    private RuntimeExceptionDao<Category, Integer> categoriesRuntimeDao = null;
     
     
 	public CatemDBHelper(Context context) { // ORM
@@ -91,6 +91,9 @@ public class CatemDBHelper extends OrmLiteSqliteOpenHelper {
 
 	 
 	 
+	public void deleteAll() {
+		
+	}
 	 
 	 
 	 @Override
