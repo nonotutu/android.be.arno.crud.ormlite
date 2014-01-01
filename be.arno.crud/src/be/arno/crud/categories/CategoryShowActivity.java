@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 // TODO : gérer les starts, restarts et fillFields;
+// TODO : gérer les mises à jour de listes : ids
 
 public class CategoryShowActivity extends Activity {
 
@@ -66,7 +67,7 @@ public class CategoryShowActivity extends Activity {
 					intent.putExtra("CATEGORY_ID", category.getId() );
 					startActivity(intent);
 				}
-			}});
+		}});
 		
 		Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
@@ -78,6 +79,7 @@ public class CategoryShowActivity extends Activity {
 				}
 		}});
 
+		
 		Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
 		bttnEdit.setOnClickListener(new OnClickListener() {
 			@Override
@@ -89,6 +91,7 @@ public class CategoryShowActivity extends Activity {
 				}
 		}});
 
+		
 		Button bttnPrev = (Button)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
@@ -99,6 +102,7 @@ public class CategoryShowActivity extends Activity {
 					fillFields();
 		}}});
 
+		
 		Button bttnNext = (Button)findViewById(R.id.categoryShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
@@ -109,6 +113,7 @@ public class CategoryShowActivity extends Activity {
 					fillFields();
 		}}});
 
+		
 		skbrPosition.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
 				@Override
@@ -196,6 +201,7 @@ public class CategoryShowActivity extends Activity {
 		}
 	}
 
+	
 	private void clearFields() {
 		txvwId.setText("");
 		txvwName.setText("");

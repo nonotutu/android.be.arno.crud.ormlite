@@ -23,6 +23,10 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//TODO : gérer les starts, restarts et fillFields;
+//TODO : gérer les mises à jour de listes : ids
+//TODO : gérer items n'existant pas
+
 
 public class ItemShowActivity extends Activity {
 
