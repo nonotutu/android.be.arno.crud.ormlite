@@ -38,9 +38,6 @@ public class ItemListActivity extends Activity {
 	
 	// Adapter de _listFilter_
 	private ArrayAdapter<ListFilter> filterListArrayAdapter;
-
-	// Adapter de la liste des _Item_
-	// private ArrayAdapter<Item> itemArrayAdapter;
 	
 	// Autres views
 	private ListView lsvwList;  // Liste
@@ -51,6 +48,7 @@ public class ItemListActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
 		
 		categoryId = getCategoryIdFromParams();
 		
@@ -62,6 +60,7 @@ public class ItemListActivity extends Activity {
 		// Initialisation du filtre par défaut
 		listFilter = filterListArrayAdapter.getItem(0);
 		
+		
 		// Button du filtre, redirige vers la métode de sélection du filtre
 		bttnFilter = (Button)findViewById(R.id.itemList_bttnFilter);
 		bttnFilter.setOnClickListener(
@@ -71,6 +70,7 @@ public class ItemListActivity extends Activity {
 						AlertDialog.Builder ad = dialogFilterSelect();
 						ad.show();
 				}});
+		
 		
 		Button bttnNew = (Button)findViewById(R.id.itemList_bttnNew);
 		bttnNew.setOnClickListener(
@@ -82,6 +82,7 @@ public class ItemListActivity extends Activity {
 						startActivity(intent);
 				}});
 
+		
 		lsvwList = (ListView)findViewById(R.id.itemList_lsvwList);
 		lsvwList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -93,7 +94,7 @@ public class ItemListActivity extends Activity {
 				int c = lsvwList.getCount();
 				
 				for ( int i = 0 ; i < c ; i+=1 ) {
-					ids.add(  ((Item)lsvwList.getItemAtPosition(i)).getId()  );
+					ids.add( ((Item)lsvwList.getItemAtPosition(i)).getId() );
 				}
 				
 				intent.putExtra("POSITION_IN_IDS", position);
@@ -102,21 +103,17 @@ public class ItemListActivity extends Activity {
 				startActivity(intent);
 			}});
 
+		
 		// ListView onLongClick, popup l'ID
 		lsvwList.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Item item = (Item)lsvwList.getItemAtPosition(position);
-				new AlertDialog.Builder(ItemListActivity.this).setMessage("ID: "+item.getId()).show();
+				new AlertDialog.Builder(ItemListActivity.this)
+							   .setMessage(getString(R.string.id) + " " + item.getId())
+							   .show();
 				return true;
 			}});
-		
-		// Peuple _items_ en fonction du _listFilter_
-		// ArrayList<Item> items = getList();
-		
-		// Affiche la liste d'Items et le nom du filtre
-		// supprimée car appelée au onStart;
-		// fillList(items);
 	}
 
 	
@@ -124,12 +121,12 @@ public class ItemListActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		fillList(getList());
+		fillList(getListFromDB());
 	}
 
 
-	// Récupère la liste selon le _listFilter_ depuis la DB via l'adapter
-	private ArrayList<Item> getList() {
+	// Récupère la liste selon le _listFilter_ depuis la DB
+	private ArrayList<Item> getListFromDB() {
 
 		ArrayList<Item> items = null;
 		// ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext()); -ORM
@@ -163,16 +160,11 @@ public class ItemListActivity extends Activity {
 	// Affiche la liste filtrée dans le ListView
 	private void fillList(ArrayList<Item> items) {
 		
-		// Liste non personnalisée :
-		// itemArrayAdapter = new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_1, items);
-		// lsvwList.setAdapter(itemArrayAdapter);
-
 		// Liste personnalisée :
 		lsvwList.setAdapter(new ItemCustomListAdapter(this, items));
 
 		txvwCount.setText(getString(R.string.items_found) + ": " + items.size());
-		bttnFilter.setText(getString(R.string.filter) + ": "
-		           + listFilter.getName());
+		bttnFilter.setText(getString(R.string.filter) + ": " + listFilter.getName());
 	}
 	
 
@@ -195,7 +187,7 @@ public class ItemListActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                     	listFilter = filterListArrayAdapter.getItem(which);
                 		dialog.dismiss();
-                		fillList(getList());
+                		fillList(getListFromDB());
                 }});
         /* TODO : NOT ok pour API 16
         adb.setOnDismissListener(
@@ -219,8 +211,7 @@ public class ItemListActivity extends Activity {
         filterListArrayAdapter.add(new ListFilter("Booléen Oui", 2));
         filterListArrayAdapter.add(new ListFilter("Booléen Non", 3));
 	}
-	
-	
+
 
 	private int getCategoryIdFromParams() {
 
@@ -228,9 +219,6 @@ public class ItemListActivity extends Activity {
 		if ( extra != null ) {
 			return extra.getInt("CATEGORY_ID");
 		}
-		
 		return -1;
 	}
-
-	
 }

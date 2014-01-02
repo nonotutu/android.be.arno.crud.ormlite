@@ -26,14 +26,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+
 public class CategoryListActivity extends Activity {
 
-	// Contiendra le texte et l'ID du filtre
-	private ListFilter listFilter;
+	private static final String LOG_TAG = "CategoryListActivity";
 
+	
+	
 	// Liste non personnalisée :
 	// Adapter de la liste des _Item_
 	private ArrayAdapter<Category> categoryArrayAdapter;
+	
+	
 	
 	// Autres views
 	private ListView lsvwList;  // Liste
@@ -43,10 +47,30 @@ public class CategoryListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i("Item/List", "onCreate");
 		setContentView(R.layout.activity_category_list);
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
+
+		
 		
 		txvwCount = (TextView)findViewById(R.id.categoryList_txvwCount);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		Button bttnNew = (Button)findViewById(R.id.categoryList_bttnNew);
 		bttnNew.setOnClickListener(
@@ -69,7 +93,7 @@ public class CategoryListActivity extends Activity {
 				int c = lsvwList.getCount();
 				
 				for ( int i = 0 ; i < c ; i+=1 ) {
-					ids.add(  ((Category)lsvwList.getItemAtPosition(i)).getId()  );
+					ids.add( ((Category)lsvwList.getItemAtPosition(i)).getId() );
 				}
 				
 				intent.putExtra("POSITION_IN_IDS", position);
@@ -78,15 +102,17 @@ public class CategoryListActivity extends Activity {
 				startActivity(intent);
 			}});
 
-		// ListView onLongClick, popup l'ID
+		
+		// ListView onLongClick, popup sur le nombre d'éléments
 		lsvwList.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Category category = (Category)lsvwList.getItemAtPosition(position);
-				new AlertDialog.Builder(CategoryListActivity.this).setMessage("@string/item_count"+category.getCountItems()).show();
+				new AlertDialog.Builder(CategoryListActivity.this)
+				               .setMessage(getString(R.string.item_count) + " " + category.getCountItems())
+				               .show();
 				return true;
 			}});
-		
 	}
 
 	
@@ -94,12 +120,12 @@ public class CategoryListActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		fillList(getList());
+		fillList(getListFromDB());
 	}
 
 
-	// Récupère la liste selon le _listFilter_ depuis la DB via l'adapter
-	private ArrayList<Category> getList() {
+	// Récupère la liste depuis la DB
+	private ArrayList<Category> getListFromDB() {
 
 		ArrayList<Category> categories = null;
 		CategoriesRepository repos = new CategoriesRepository(getApplicationContext());
@@ -108,15 +134,34 @@ public class CategoryListActivity extends Activity {
 	}
 
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Affiche la liste filtrée dans le ListView
 	private void fillList(ArrayList<Category> categories) {
 		
 		// Liste non personnalisée :
 		categoryArrayAdapter = new ArrayAdapter<Category>(this, android.R.layout.simple_list_item_1, categories);
 		lsvwList.setAdapter(categoryArrayAdapter);
-
-		// Liste personnalisée :
-		// lsvwList.setAdapter(new ItemCustomListAdapter(this, items));
 
 		txvwCount.setText(getString(R.string.categories_found) + ": " + categories.size());
 	}
