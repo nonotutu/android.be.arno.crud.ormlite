@@ -11,11 +11,14 @@ public class Toaster {
 	
 	public static final int ERROR   = 0;
 	public static final int SUCCESS = 1;
+	public static final int INFO = 2;
 	
-	public static void showToast(Context context, int kind, int message) {
-				
+	
+	public static void showToast(Context context, int kind, String message) {
+
 		LayoutInflater inflater =
 				(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	
 		View layout;
 		switch (kind) {
 		case ERROR:
@@ -23,6 +26,9 @@ public class Toaster {
 			break;
 		case SUCCESS:
 			layout = inflater.inflate(R.layout.toast_success, null);
+			break;
+		case INFO:
+			layout = inflater.inflate(R.layout.toast_info, null);
 			break;
 		default:
 			layout = inflater.inflate(R.layout.toast_default, null);
@@ -36,5 +42,11 @@ public class Toaster {
 	    toast.setDuration(Toast.LENGTH_LONG);
 	    toast.setView(layout);
 	    toast.show();
+	
+	}
+
+	
+	public static void showToast(Context context, int kind, int message) {
+		showToast(context, kind, context.getString(message));
 	}
 }

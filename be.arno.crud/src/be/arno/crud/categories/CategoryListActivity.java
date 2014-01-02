@@ -1,29 +1,25 @@
 package be.arno.crud.categories;
 
-import be.arno.crud.ListFilter;
 import be.arno.crud.R;
 
 import java.util.ArrayList;
 
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
 
 
 
@@ -39,18 +35,29 @@ public class CategoryListActivity extends Activity {
 	
 	
 	
-	// Autres views
 	private ListView lsvwList;  // Liste
 	private Button bttnFilter;  // Bouton du filtre
 	private TextView txvwCount; // Nombre de résultats
 	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_list);
 		Log.i(LOG_TAG, "void onCreate(Bundle)");
 
-		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		txvwCount = (TextView)findViewById(R.id.categoryList_txvwCount);
 		
@@ -109,14 +116,13 @@ public class CategoryListActivity extends Activity {
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Category category = (Category)lsvwList.getItemAtPosition(position);
 				new AlertDialog.Builder(CategoryListActivity.this)
-				               .setMessage(getString(R.string.item_count) + " " + category.getCountItems())
+				               .setMessage(getString(R.string.item_count) + ": " + category.getCountItems())
 				               .show();
 				return true;
 			}});
 	}
 
 	
-	// Met à jour la liste au _start_ de l'_activity_
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -124,7 +130,6 @@ public class CategoryListActivity extends Activity {
 	}
 
 
-	// Récupère la liste depuis la DB
 	private ArrayList<Category> getListFromDB() {
 
 		ArrayList<Category> categories = null;
@@ -140,13 +145,7 @@ public class CategoryListActivity extends Activity {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
+		
 	
 	
 	

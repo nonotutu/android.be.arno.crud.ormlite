@@ -13,6 +13,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -41,12 +42,22 @@ public class CategoryShowActivity extends Activity {
 	
 	
 	
-	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
+
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(LOG_TAG, "onStart");
+		Log.i(LOG_TAG, "void onStart()");
 		assignCategoryFromDB(array_ids.get(position_in_ids));
 		fillFields();
 	}
@@ -55,9 +66,10 @@ public class CategoryShowActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_show);
-		
-		Log.i(LOG_TAG, "onCreate");
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
 
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
 		txvwId =         (TextView) findViewById(R.id.categoryShow_txvwId);
 		txvwName =       (TextView) findViewById(R.id.categoryShow_txvwName);
 		txvwItemsCount = (TextView) findViewById(R.id.categoryShow_txvwItemsCount);
@@ -141,6 +153,7 @@ public class CategoryShowActivity extends Activity {
 					txvwPosition.setText( (progress+1) + " / " + array_ids.size() );
 				}
 			});
+		
 		
 		// récupérer les infos de liste (IDS & POSITION)
 		assignParamsFromBundle();

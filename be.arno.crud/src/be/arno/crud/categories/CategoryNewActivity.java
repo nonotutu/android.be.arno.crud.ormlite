@@ -25,8 +25,7 @@ public class CategoryNewActivity extends Activity {
 
 	
 	
-	
-	
+
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,7 +48,10 @@ public class CategoryNewActivity extends Activity {
 							Toaster.ERROR, R.string.category_not_created);
 				}
 				return true;
-	        default:
+			case android.R.id.home:
+				finish();
+				return true;
+			default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
 	}	
@@ -58,8 +60,9 @@ public class CategoryNewActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_new);
-
 		Log.i(LOG_TAG, "onCreate");
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		edtxName = (EditText)findViewById(R.id.categoryForm_edtxName);
 		

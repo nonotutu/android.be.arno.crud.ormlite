@@ -15,6 +15,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
@@ -32,18 +33,30 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class ItemSearchActivity extends Activity {
 
+	private static final String LOG_TAG = "ItemSearchActivity";
+	
 	// Adapter de la liste des _Item_
 	private ArrayAdapter<Item> itemArrayAdapter;
 
 	private EditText edtxSearch; // champ de recherche
 	private ListView lsvwList;   // liste des résultats
 	private TextView txvwCount;  // nombre d'_Item_ dans la liste
-	//private Switch swchLive;
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
+	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i("=> ItemSeachActivity", "onStart");
+		Log.i(LOG_TAG, "void onStart()");
 		fillList();
 	}
 
@@ -51,9 +64,9 @@ public class ItemSearchActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_search);
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		Log.i("=> ItemSearchActivity", "onCreate");
-
 		edtxSearch = (EditText)findViewById(R.id.itemSearch_edtxSearch);
 		lsvwList = (ListView)findViewById(R.id.itemSearch_lsvwList);
 		txvwCount = (TextView)findViewById(R.id.itemSearch_txvwCount);
@@ -71,7 +84,6 @@ public class ItemSearchActivity extends Activity {
 			}
 			@Override
 			public void afterTextChanged(Editable s) {
-				Log.i("edtxSearch", "afterTextChanged");
 				// uniquement si la recherche en live est activée et que l'EditText n'est pas vide
 				if ( swchLive.isChecked() == true && edtxSearch.getText().length() != 0)
 					fillList();
@@ -84,7 +96,6 @@ public class ItemSearchActivity extends Activity {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Log.i("=> ItemSeachActivity", "bttnSearch.onClick");
 						fillList();
 					}
 				}
@@ -95,7 +106,6 @@ public class ItemSearchActivity extends Activity {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Log.i("=> ItemSeachActivity", "bttnNew.onClick");
 						Intent i = new Intent(getApplicationContext(), ItemNewActivity.class);
 						startActivity(i);
 					}
@@ -106,10 +116,7 @@ public class ItemSearchActivity extends Activity {
 				new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-						Log.i("=> ItemSeachActivity", "lsvwList.onItemClick");
-						Item item = (Item)lsvwList.getItemAtPosition(position);
 						Intent intent = new Intent(getApplicationContext(), ItemShowActivity.class);
-						intent.putExtra("ID", "" + item.getId());
 						
 						// TODO : mettre ailleurs
 						ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -119,8 +126,8 @@ public class ItemSearchActivity extends Activity {
 							ids.add(itemArrayAdapter.getItem(i).getId());
 						}
 						
-						intent.putExtra("LAST", position);
-						intent.putExtra("IDS", ids);
+						intent.putExtra("POSITION_IN_IDS", position);
+						intent.putExtra("ARRAY_IDS", ids);
 						startActivity(intent);
 					}
 				}
@@ -130,7 +137,7 @@ public class ItemSearchActivity extends Activity {
 
 	// Get et affiche la liste dans le ListView
 	private void fillList() {
-		Log.i("=> ItemSearchActivity", "fillList");
+		Log.i(LOG_TAG, "void fillList()");
 		List<Item> items = getList(edtxSearch.getText().toString());
 		itemArrayAdapter = new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_1, items);
 		lsvwList.setAdapter(itemArrayAdapter);
@@ -140,8 +147,7 @@ public class ItemSearchActivity extends Activity {
 	
 	// Récupère la liste selon le champ de recherche depuis la DB via l'Adapter
 	private List<Item> getList(String search) {
-
-		Log.i("=> ItemSearchActivity", "getList");
+		Log.i(LOG_TAG, "List<Item> getList(String search)");
 		
 		// Retire les leading & trailing spaces
 		search = search.trim();
@@ -152,12 +158,10 @@ public class ItemSearchActivity extends Activity {
 		// Découpe la recherche à chaque espace
 		String[] searchs = search.split(" ");
 		
-		// Ouvre la DB via d'Adapter
 		List<Item> items = new ArrayList<Item>();
-		// ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext()); -ORM
-		// itemAdapter.openReadable(); -ORM
-
-		ItemsRepository repos = new ItemsRepository(getApplicationContext()); // ORM
+		
+		// Ouverture de la DB
+		ItemsRepository itemsRepository = new ItemsRepository(getApplicationContext());
 
 		// Boucle sur les 3 premiers mots
 		int i = 0;
@@ -170,7 +174,7 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à dddd-dd-dd ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont la date (non vérifiée) correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(repos.getSearchOnDateLight(s)); // ORM
+					items.addAll(itemsRepository.getSearchOnDateLight(s));
 				}
 			}
 			// Si le mot fait 7 caractères ...
@@ -180,7 +184,7 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à dddd-dd ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont l'année et le mois correspondent dans la DB et les ajoute à la liste en cours
-					items.addAll(repos.getSearchOnYearMonthLight(s)); // ORM
+					items.addAll(itemsRepository.getSearchOnYearMonthLight(s));
 				}
 			}
 			// Si le mot fait 4 caractères ...
@@ -190,27 +194,22 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à un nombre de 4 chiffres ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont l'année correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(repos.getSearchOnYearLight(s)); // ORM
-					//items.addAll(itemAdapter.getSearchOnYear(s)); //-ORM
+					items.addAll(itemsRepository.getSearchOnYearLight(s));
 				}
 			}
 			// Si le mot fait au moins 2 caractères ...
 			if ( s.length() >= 2 )
 				// ... va chercher les items contenant le mot dans la DB et jes ajoute à la liste en cours 
-				items.addAll(repos.getSearchOnNameLight(s));
-				// items.addAll(itemAdapter.getSearchOnName(s)); -ORM
+				items.addAll(itemsRepository.getSearchOnNameLight(s));
 			i = i + 1;
 		}
-
-		// Ferme la DB via l'Adapter
-		// itemAdapter.close(); -ORM
 
 		return removeDuplicates(items);
 	}
 	
 	// Suppression des doublons, via une astucieuse double boucle qui, non seulement contente de m'avoir pris 2 heures de mon temps, m'a rappelé que les cours de principes de programmation étaient bien loins. Bordel.
 	private List<Item> removeDuplicates(List<Item> items) {
-		Log.i("=> ItemSearchActivity", "removeDuplicates");
+		Log.i(LOG_TAG, "List<Item> removeDuplicates(List<Item>)");
 		int j;
 		int i = 0;
 		while ( i < items.size() - 1 ) {

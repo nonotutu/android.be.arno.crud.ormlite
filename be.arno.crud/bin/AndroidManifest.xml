@@ -35,15 +35,18 @@
         </activity>
         <activity
             android:name="be.arno.crud.items.ItemListActivity"
-            android:label="@string/title_activity_item_list" >
+            android:label="@string/title_activity_item_list"
+            android:configChanges="keyboardHidden|orientation|screenSize" > <!-- avoid reloading -->
         </activity>
         <activity
             android:name="be.arno.crud.items.ItemShowActivity"
-            android:label="@string/title_activity_item_show" >
+            android:label="@string/title_activity_item_show"
+            android:configChanges="keyboardHidden|orientation|screenSize" > <!-- avoid reloading -->
         </activity>
         <activity
             android:name="be.arno.crud.items.ItemEditActivity"
-            android:label="@string/title_activity_item_edit" >
+            android:label="@string/title_activity_item_edit"
+             >
         </activity>
         <activity
             android:name="be.arno.crud.items.ItemIndexActivity"
@@ -63,11 +66,13 @@
         </activity>
         <activity
             android:name="be.arno.crud.categories.CategoryListActivity"
-            android:label="@string/title_activity_category_list" >
+            android:label="@string/title_activity_category_list"
+            android:configChanges="keyboardHidden|orientation|screenSize" > <!-- avoid reloading -->
         </activity>
         <activity
             android:name="be.arno.crud.categories.CategoryShowActivity"
-            android:label="@string/title_activity_category_show" >
+            android:label="@string/title_activity_category_show"
+            android:configChanges="keyboardHidden|orientation|screenSize" > <!-- avoid reloading -->            
         </activity>
         <activity
             android:name="be.arno.crud.categories.CategoryEditActivity"

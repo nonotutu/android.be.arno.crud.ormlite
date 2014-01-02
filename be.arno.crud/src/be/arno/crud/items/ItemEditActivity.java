@@ -15,6 +15,7 @@ import android.widget.RatingBar;
 import android.widget.ToggleButton;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 
@@ -53,6 +54,9 @@ public class ItemEditActivity extends Activity {
 							  		  Toaster.ERROR, R.string.item_not_updated);
 				}
 				return true;
+	        case android.R.id.home:
+	            finish();
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -62,6 +66,8 @@ public class ItemEditActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_edit);
+		
+	    getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		edtxName =   (EditText)    findViewById(R.id.itemForm_edtxName);
 		dtpkDate =   (DatePicker)  findViewById(R.id.itemForm_dtpkDate);

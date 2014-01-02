@@ -29,10 +29,19 @@
         android:text="@string/NEW" />
 
     <Button
-        android:id="@+id/itemList_bttnFilter"
+        android:id="@+id/itemList_bttnSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/itemList_bttnNew"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/search" />
+    
+    <Button
+        android:id="@+id/itemList_bttnFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/itemList_bttnSearch"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:text="@string/filter" />

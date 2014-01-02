@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import be.arno.crud.R;
 import be.arno.crud.Toaster;
+import be.arno.crud.categories.CategoriesRepository;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -12,6 +13,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -40,13 +42,23 @@ public class ItemShowActivity extends Activity {
 	private ImageView imvwImage;
 	
 	private ArrayList<Integer> array_ids; // liste des ids
-	private int position_in_ids;		  // position dans la liste des ids
+	private int position_in_ids;	      // position dans la liste des ids
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(LOG_TAG, "onStart");
+		Log.i(LOG_TAG, "void onStart()");
 		assignItemFromDB(array_ids.get(position_in_ids));
 		fillFields();
 	}
@@ -56,7 +68,9 @@ public class ItemShowActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_show);
 
-		Log.i(LOG_TAG, "onCreate");
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		txvwId =       (TextView) findViewById(R.id.itemShow_txvwId);
 		txvwCategory = (TextView) findViewById(R.id.itemShow_txvwCategory);
@@ -142,6 +156,7 @@ public class ItemShowActivity extends Activity {
 				}
 			});
 
+
 		// récupérer les infos de liste (IDS & POSITION)
 		assignParamsFromBundle();
 		
@@ -192,13 +207,13 @@ public class ItemShowActivity extends Activity {
 
 	private void fillFields() {
 		Log.i(LOG_TAG, "void fillFields()");
-
+		
 		skbrPosition.setProgress(position_in_ids);
 		txvwPosition.setText( (position_in_ids+1) + " / " + array_ids.size() );
 
 		if ( item != null ) {		
 			txvwId.setText(""+item.getId());
-			txvwCategory.setText(""+item.getCategoryId());
+			txvwCategory.setText(item.getCategoryName());
 			txvwName.setText(item.getName());
 			txvwDate.setText(item.getDate());
 			rtbrRating.setRating(item.getRating());

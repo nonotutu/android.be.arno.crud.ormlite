@@ -34,7 +34,7 @@ public class ItemNewActivity extends Activity {
 	    inflater.inflate(R.menu.actionbar_save, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 	    switch (menuItem.getItemId()) {
@@ -48,7 +48,9 @@ public class ItemNewActivity extends Activity {
 					Toaster.showToast(getApplicationContext(),
 							Toaster.ERROR, R.string.item_not_created);
 				}
-				return true;
+	        case android.R.id.home:
+	            finish();
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -59,7 +61,9 @@ public class ItemNewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_new);
 
-		Log.i(LOG_TAG, "onCreate");
+		Log.i(LOG_TAG, "void onCreate(Bundle)");
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		edtxName = (EditText)findViewById(R.id.itemForm_edtxName);
 		dtpkDate = (DatePicker)findViewById(R.id.itemForm_dtpkDate);

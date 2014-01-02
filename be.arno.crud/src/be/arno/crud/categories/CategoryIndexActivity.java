@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -30,6 +31,18 @@ public class CategoryIndexActivity extends Activity {
 	
 	private TextView txvwCount;
 	private TextView txvwItemsCount;
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
+
 	
 	@Override
 	protected void onRestart() {
@@ -48,6 +61,8 @@ public class CategoryIndexActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_index);
+		
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		txvwCount = (TextView)findViewById(R.id.categoryIndex_txvwCount);
 		txvwItemsCount = (TextView)findViewById(R.id.categoryIndex_txvwItemsCount);

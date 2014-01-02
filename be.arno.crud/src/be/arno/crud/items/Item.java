@@ -2,6 +2,9 @@ package be.arno.crud.items;
 // TODO : dépendances avec category + category_id obligatoire
 import java.io.ByteArrayOutputStream;
 
+import be.arno.crud.App;
+import be.arno.crud.categories.CategoriesRepository;
+
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField; 	// ORM
 import com.j256.ormlite.table.DatabaseTable;	// ORM
@@ -156,6 +159,13 @@ public class Item {
 	public String toString() {
 		String s = this.name + " :: " + this.getCharedRating();
 		return s;
+	}
+	
+	
+	public String getCategoryName() {
+		CategoriesRepository categoriesRepository = 
+				new CategoriesRepository(App.getContext());
+		return categoriesRepository.getCategoryById(this._category_id).getName(); 
 	}
 	
 	

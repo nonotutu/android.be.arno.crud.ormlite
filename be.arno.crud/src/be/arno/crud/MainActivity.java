@@ -6,7 +6,7 @@ import be.arno.crud.R;
 import be.arno.crud.categories.CategoriesRepository;
 import be.arno.crud.categories.CategoryIndexActivity;
 import be.arno.crud.items.Item;
-import be.arno.crud.items.ItemIndexActivity;
+import be.arno.crud.items.ItemSearchActivity;
 import be.arno.crud.items.ItemsRepository;
 import be.arno.crud.items.Pokemons;
 
@@ -64,11 +64,15 @@ public class MainActivity extends Activity {
 							new Runnable() {
 								public void run() {
 									fillWithPokemons();
-						}}).start();			
-						Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
+						}}).start();
+						Toaster.showToast(getApplicationContext(),
+								  Toaster.INFO,
+								  "Instruction sent.");
 						onRestart();
 				    } else {
-						Toast.makeText(getApplicationContext(), "There must be at least 1 Category to insert Items.", Toast.LENGTH_LONG).show();
+				    	Toaster.showToast(getApplicationContext(),
+								  Toaster.ERROR,
+								  "There must be at least 1 Category to insert Items.");
 				    }
 				    
 						
@@ -77,14 +81,16 @@ public class MainActivity extends Activity {
 					return false;
 		}});
 		
-		// VFEC
+
 		Button bttnDeleteAll = (Button)findViewById(R.id.main_bttnClearDB);		
 		bttnDeleteAll.setOnLongClickListener(
 			new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
 
-					Toast.makeText(getApplicationContext(), "Instruction sent.", Toast.LENGTH_LONG).show();
+			    	Toaster.showToast(getApplicationContext(),
+							  		  Toaster.INFO,
+							  		  "Instruction sent.");
 					new Thread(
 						new Runnable() {
 							public void run() {
@@ -97,6 +103,16 @@ public class MainActivity extends Activity {
 					onRestart();
 					return false;
 		}});
+		
+		Button bttnSearch = (Button)findViewById(R.id.main_bttnSearch);
+		bttnSearch.setOnClickListener(
+			new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(getApplicationContext(), ItemSearchActivity.class);
+					startActivity(i);
+		}});
+			
 
 	}
 	

@@ -53,6 +53,9 @@ public class CategoryEditActivity extends Activity {
 							  		  Toaster.ERROR, R.string.category_not_updated);
 				}
 				return true;
+	        case android.R.id.home:
+	            finish();
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -63,6 +66,8 @@ public class CategoryEditActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_edit);
 
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
 		edtxName = (EditText) findViewById(R.id.categoryForm_edtxName);
 		
 		

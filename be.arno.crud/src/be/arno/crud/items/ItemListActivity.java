@@ -1,48 +1,57 @@
 package be.arno.crud.items;
 
-import be.arno.crud.ListFilter;
+import be.arno.crud.PairIdName;
 import be.arno.crud.R;
+import be.arno.crud.categories.CategoriesRepository;
+import be.arno.crud.categories.Category;
 
 import java.util.ArrayList;
 
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class ItemListActivity extends Activity {
 
 	private static final String LOG_TAG = "ItemListActivity";
 	
-	private int categoryId;
+	private Category category;
 	
 	// Contiendra le texte et l'ID du filtre
-	private ListFilter listFilter;
+	private PairIdName filter;
 	
 	// Adapter de _listFilter_
-	private ArrayAdapter<ListFilter> filterListArrayAdapter;
+	private ArrayAdapter<PairIdName> filtersArrayAdapter;
 	
-	// Autres views
 	private ListView lsvwList;  // Liste
 	private Button bttnFilter;  // Bouton du filtre
 	private TextView txvwCount; // Nombre de résultats
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,18 +59,19 @@ public class ItemListActivity extends Activity {
 		setContentView(R.layout.activity_item_list);
 		Log.i(LOG_TAG, "void onCreate(Bundle)");
 		
-		categoryId = getCategoryIdFromParams();
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		assignCategoryFromBundleThenDB();
 		
 		txvwCount = (TextView)findViewById(R.id.itemList_txvwCount);
 		
 		// Initialisation de la liste des filtres
-		initFilter();
+		initFilters();
 
 		// Initialisation du filtre par défaut
-		listFilter = filterListArrayAdapter.getItem(0);
+		filter = filtersArrayAdapter.getItem(0);
 		
 		
-		// Button du filtre, redirige vers la métode de sélection du filtre
 		bttnFilter = (Button)findViewById(R.id.itemList_bttnFilter);
 		bttnFilter.setOnClickListener(
 				new OnClickListener() {			
@@ -78,10 +88,21 @@ public class ItemListActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(getApplicationContext(), ItemNewActivity.class);
-						intent.putExtra("CATEGORY_ID", categoryId);
+						intent.putExtra("CATEGORY_ID", category.getId());
 						startActivity(intent);
 				}});
 
+		/*
+		Button bttnSearch = (Button)findViewById(R.id.itemList_bttnSearch);
+		bttnSearch.setOnClickListener(
+			new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(getApplicationContext(), ItemSearchActivity.class);
+					startActivity(i);
+				}
+			}
+		);*/
 		
 		lsvwList = (ListView)findViewById(R.id.itemList_lsvwList);
 		lsvwList.setOnItemClickListener(new OnItemClickListener() {
@@ -117,42 +138,34 @@ public class ItemListActivity extends Activity {
 	}
 
 	
-	// Met à jour la liste au _start_ de l'_activity_
 	@Override
 	protected void onStart() {
 		super.onStart();
+		this.setTitle(category.getName());
 		fillList(getListFromDB());
 	}
 
 
-	// Récupère la liste selon le _listFilter_ depuis la DB
 	private ArrayList<Item> getListFromDB() {
 
 		ArrayList<Item> items = null;
-		// ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext()); -ORM
-		// itemAdapter.openReadable(); -ORM
 		ItemsRepository repos = new ItemsRepository(getApplicationContext());
 		
-		switch(listFilter.getRsql()) {
+		switch(filter.getId()) {
 			case 1:
-				items = (ArrayList<Item>) repos.getOnlyWithDateLight(); // ORM
-				// itemAdapter.getOnlyWithDate(); -ORM
+				items = (ArrayList<Item>) repos.getOnlyWithDateLight();
 				break;
 			case 2:
-				items = (ArrayList<Item>) repos.getOnlyBoolLight(1); // ORM
-				// items = itemAdapter.getOnlyBool(1); -ORM
+				items = (ArrayList<Item>) repos.getOnlyBoolLight(1);
 				break;
 			case 3:
-				items = (ArrayList<Item>) repos.getOnlyBoolLight(0); // ORM
-				// items = itemAdapter.getOnlyBool(0); -ORM
+				items = (ArrayList<Item>) repos.getOnlyBoolLight(0);
 				break;
 			default:
-				items = (ArrayList<Item>) repos.getAllLight(categoryId); // ORM
-				//items = itemAdapter.getAllLight(); -ORM
+				items = (ArrayList<Item>) repos.getAllLight(category.getId());
 				break;
 			}
 			
-		// itemAdapter.close(); -ORM
 		return items;		
 	}
 
@@ -164,12 +177,11 @@ public class ItemListActivity extends Activity {
 		lsvwList.setAdapter(new ItemCustomListAdapter(this, items));
 
 		txvwCount.setText(getString(R.string.items_found) + ": " + items.size());
-		bttnFilter.setText(getString(R.string.filter) + ": " + listFilter.getName());
+		bttnFilter.setText(getString(R.string.filter) + ": " + filter.getName());
 	}
 	
 
 	// Dialog du choix du filtre, depuis _filterListArrayAdapter_
-	//public void filterChoice() {
 	public AlertDialog.Builder dialogFilterSelect() {
 	
 		AlertDialog.Builder adb = new AlertDialog.Builder(ItemListActivity.this);
@@ -181,11 +193,11 @@ public class ItemListActivity extends Activity {
                         dialog.dismiss();
                 }});
 		// Ne pas confondre l'int de la list et l'int de l'adapter
-        adb.setSingleChoiceItems(filterListArrayAdapter, listFilter.getRsql(),
+        adb.setSingleChoiceItems(filtersArrayAdapter, filter.getId(),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                    	listFilter = filterListArrayAdapter.getItem(which);
+                    	filter = filtersArrayAdapter.getItem(which);
                 		dialog.dismiss();
                 		fillList(getListFromDB());
                 }});
@@ -200,25 +212,30 @@ public class ItemListActivity extends Activity {
         }
 	
 
-	// Initialisation de l'adapter de la liste des _listFilter_
-	public void initFilter() {
-		filterListArrayAdapter = new ArrayAdapter<ListFilter>(
+	// Initialisation de l'adapter de la liste _filters_
+	public void initFilters() {
+		filtersArrayAdapter = new ArrayAdapter<PairIdName>(
                 ItemListActivity.this,
                 android.R.layout.select_dialog_singlechoice);
 		
-        filterListArrayAdapter.add(new ListFilter("Tous", 0));
-        filterListArrayAdapter.add(new ListFilter("Avec date", 1));
-        filterListArrayAdapter.add(new ListFilter("Booléen Oui", 2));
-        filterListArrayAdapter.add(new ListFilter("Booléen Non", 3));
+        filtersArrayAdapter.add(new PairIdName(0, "Tous"));
+        filtersArrayAdapter.add(new PairIdName(1, "Avec date"));
+        filtersArrayAdapter.add(new PairIdName(2, "Booléen Oui"));
+        filtersArrayAdapter.add(new PairIdName(3, "Booléen Non"));
 	}
 
 
-	private int getCategoryIdFromParams() {
-
+	private void assignCategoryFromBundleThenDB() {
+		Log.i(LOG_TAG, "void assignCategoryFromBundleThenDB()");
+		int catId = -1;
+		
 		Bundle extra = this.getIntent().getExtras();
 		if ( extra != null ) {
-			return extra.getInt("CATEGORY_ID");
+			catId = extra.getInt("CATEGORY_ID");
 		}
-		return -1;
+		
+		CategoriesRepository categoriesRepository =
+				new CategoriesRepository(getApplicationContext());
+		category = categoriesRepository.getCategoryById(catId);
 	}
 }
