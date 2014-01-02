@@ -15,7 +15,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class ItemsRepository { // ORM
+public class ItemsRepository {
 	 
 	private static final String LOG_TAG = "ItemsRepository";
 	
@@ -33,32 +33,37 @@ public class ItemsRepository { // ORM
             // TODO: Exception Handling
             e.printStackTrace();
         }
- 
     }
     
     
-    // TODO : gérer codes retour
+    /* returns number of successfully created rows */
     public int create(Item item) {
-    	Log.i(LOG_TAG, "public int create(Item)");
-        try {
-            return itemsDao.create(item);
-        } catch (SQLException e) {
-            // TODO: Exception Handling
-            e.printStackTrace();
-        }
+    	Log.i(LOG_TAG, "int create(Item) | .getId()" + item.getId());
+    	if ( item.isValid() ) {
+	        try {
+	            return itemsDao.create(item);
+	        } catch (SQLException e) {
+	            // TODO: Exception Handling
+	            e.printStackTrace();
+	        }
+    	}	
         return 0;
     }
     
     
+    /* returns number of successfully updated rows */
     public int update(Item item) {
-        try {
-            return itemsDao.update(item);
-        } catch (SQLException e) {
-            // TODO: Exception Handling
-            e.printStackTrace();
+		Log.i(LOG_TAG, "int update(Item) | .getId() : " + item.getId());
+        if ( item.isValid() ) {
+			try {
+	            return itemsDao.update(item);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
         }
         return 0;
     }
+
     
     public int delete(Item item) {
         try {
@@ -132,7 +137,10 @@ public class ItemsRepository { // ORM
     
     public long getCount(int categoryId) {
     	try {
-    		return itemsDao.queryBuilder().selectColumns(Item.COLUMN_ID).where().eq(Item.COLUMN_CATEGORY_ID, categoryId).countOf();
+    		return itemsDao.queryBuilder().selectColumns(Item.COLUMN_ID)
+    									  .where()
+    									  .eq(Item.COLUMN_CATEGORY_ID, categoryId)
+    									  .countOf();
     	} catch (SQLException e) {}
     	return 0;
     }
@@ -189,6 +197,7 @@ public class ItemsRepository { // ORM
         }
         return null;
     }
+    
 
     public List<Item> getAllLight(int categoryId) {
         try {

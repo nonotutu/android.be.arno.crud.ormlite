@@ -24,12 +24,13 @@
             
             <include layout="@layout/partial_category_form"/>
 
+            <!-- 
             <Button
                 android:id="@+id/categoryNew_bttnCreate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/create" />
-
+			 -->
         </LinearLayout>
 
     </ScrollView>

@@ -22,11 +22,13 @@
 
             <include layout="@layout/partial_item_form"/>
 
+            <!-- 
             <Button
                 android:id="@+id/itemEdit_bttnUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/update" />
+			 -->
         </LinearLayout>
 
     </ScrollView>

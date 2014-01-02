@@ -62,9 +62,7 @@ public class CategoryListActivity extends Activity {
 		lsvwList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-				Category category = (Category)lsvwList.getItemAtPosition(position);
 				Intent intent = new Intent(getApplicationContext(), CategoryShowActivity.class);
-				intent.putExtra("ID", category.getId());
 
 				// TODO : mettre ailleurs
 				ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -74,8 +72,8 @@ public class CategoryListActivity extends Activity {
 					ids.add(  ((Category)lsvwList.getItemAtPosition(i)).getId()  );
 				}
 				
-				intent.putExtra("LAST", position);
-				intent.putExtra("IDS", ids);
+				intent.putExtra("POSITION_IN_IDS", position);
+				intent.putExtra("ARRAY_IDS", ids);
 				
 				startActivity(intent);
 			}});

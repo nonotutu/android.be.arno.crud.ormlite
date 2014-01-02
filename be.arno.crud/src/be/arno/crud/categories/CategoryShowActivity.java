@@ -1,10 +1,9 @@
 package be.arno.crud.categories;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import be.arno.crud.R;
-import be.arno.crud.myApp;
+import be.arno.crud.Toaster;
 import be.arno.crud.items.ItemListActivity;
 
 import android.os.Bundle;
@@ -17,46 +16,54 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
-// TODO : gérer les starts, restarts et fillFields;
+
 // TODO : gérer les mises à jour de listes : ids
 
 public class CategoryShowActivity extends Activity {
+	
+	private static final String LOG_TAG = "CategoryShowActivity";
 
 	private Category category;
-	private ArrayList<Integer> ids;
-	private int last;
+	private ArrayList<Integer> array_ids; // liste des ids
+	private int position_in_ids;		  // position dans la liste des ids
 
 	private TextView txvwId;
 	private TextView txvwName;
 	private TextView txvwItemsCount;
 	private SeekBar skbrPosition;
 	private TextView txvwPosition;
+		
 	
-	// TODO : retirer le start activity for result de Item
+	
+	
+	
+	
+	
 	@Override
-	protected void onRestart() {
-		super.onRestart();
+	protected void onStart() {
+		super.onStart();
+		Log.i(LOG_TAG, "onStart");
+		assignCategoryFromDB(array_ids.get(position_in_ids));
 		fillFields();
 	}
 	
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_show);
+		
+		Log.i(LOG_TAG, "onCreate");
 
 		txvwId =         (TextView) findViewById(R.id.categoryShow_txvwId);
 		txvwName =       (TextView) findViewById(R.id.categoryShow_txvwName);
 		txvwItemsCount = (TextView) findViewById(R.id.categoryShow_txvwItemsCount);
 		skbrPosition =   (SeekBar)  findViewById(R.id.categoryShow_skbrPosition);
 		txvwPosition =   (TextView) findViewById(R.id.categoryShow_txvwPosition);
+		
 		
 		Button bttnItems = (Button)findViewById(R.id.categoryShow_bttnItems);
 		bttnItems.setOnClickListener(new OnClickListener() {
@@ -69,13 +76,14 @@ public class CategoryShowActivity extends Activity {
 				}
 		}});
 		
+		
 		Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if ( category != null ) {		
-					Dialog d = askConfirmation();
-					d.show();
+					Dialog dialog = askConfirmationForDelete();
+					dialog.show();
 				}
 		}});
 
@@ -85,41 +93,44 @@ public class CategoryShowActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if ( category != null ) {		
-					Intent intent = new Intent(getApplicationContext(), CategoryEditActivity.class);
+					Intent intent = new Intent(getApplicationContext(),
+							                   CategoryEditActivity.class);
 					intent.putExtra("ID", category.getId() );
 					startActivity(intent);
 				}
 		}});
-
+		
 		
 		Button bttnPrev = (Button)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if ( last > 0 ) {
-					last = last - 1;
-					getCategoryFromDB(ids.get(last));
+				if ( position_in_ids > 0 ) {
+					position_in_ids = position_in_ids - 1;
+					assignCategoryFromDB(array_ids.get(position_in_ids));
 					fillFields();
-		}}});
-
+				}
+		}});
+		
 		
 		Button bttnNext = (Button)findViewById(R.id.categoryShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if ( last < ids.size()-1 ) {
-					last = last + 1;
-					getCategoryFromDB(ids.get(last));
+				if ( position_in_ids < array_ids.size()-1 ) {
+					position_in_ids = position_in_ids + 1;
+					assignCategoryFromDB(array_ids.get(position_in_ids));
 					fillFields();
-		}}});
-
+				}
+		}});
+		
 		
 		skbrPosition.setOnSeekBarChangeListener(
 			new OnSeekBarChangeListener() {
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {
-					last = seekBar.getProgress();
-					getCategoryFromDB(ids.get(last));
+					position_in_ids = seekBar.getProgress();
+					assignCategoryFromDB(array_ids.get(position_in_ids));
 					fillFields();
 				}
 				@Override
@@ -127,103 +138,103 @@ public class CategoryShowActivity extends Activity {
 				}
 				@Override
 				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					txvwPosition.setText( " " + (progress+1) + " / " + ids.size() + " ");
+					txvwPosition.setText( (progress+1) + " / " + array_ids.size() );
 				}
 			});
-
-
-		// récupérer l'ID dans le Bundle
-		int id = getIdFromParams();
-		// récupérer l'item de la DB
-		getCategoryFromDB(id);
 		
-		// récupérer les infos de liste (LAST & IDS)
-		getParams();
+		// récupérer les infos de liste (IDS & POSITION)
+		assignParamsFromBundle();
 		
-		skbrPosition.setMax(ids.size()-1);
-		
-		fillFields();
-
+		skbrPosition.setMax(array_ids.size()-1);
 	}
 
 
 	private void deleteCategory() {
-		
-		CategoriesRepository repos = new CategoriesRepository(getApplicationContext());
-		repos.delete(category);
+		Log.i(LOG_TAG, "void deleteCategory()");		
+		CategoriesRepository categoriesRepository = 
+				new CategoriesRepository(getApplicationContext());
+		categoriesRepository.delete(category);
 	
 		// TODO : vérifier si supprimé
 		finish();
 	}
 
 
-	private void getParams() {
+	private void assignParamsFromBundle() {
+		Log.i(LOG_TAG, "assignParamsFromBundle()");
 		Bundle extra = this.getIntent().getExtras();
 		if ( extra != null ) {
-			ids = extra.getIntegerArrayList("IDS");
-			ids.add(0);
-			last = extra.getInt("LAST");
+			array_ids = extra.getIntegerArrayList("ARRAY_IDS");
+			array_ids.add(0); // pour tester un élément vide TODO : supprimer ligne
+			position_in_ids = extra.getInt("POSITION_IN_IDS");
 		}
 	}
 	
-	
-	private int getIdFromParams() {
-
+	/*
+	private int getIdFromBundle() {
+		Log.i(LOG_TAG, "int getIdFromBundle()");
 		int id = -1;
 		Bundle extra = this.getIntent().getExtras();
 		if ( extra != null ) {
 			id = extra.getInt("ID");
 		}
 		return id;
-	}
+	}*/
 
 
-	private void getCategoryFromDB(int id) {
-		
-		CategoriesRepository repos;
-        repos = new CategoriesRepository(this);
-        category = repos.getCategoryById(id);
-		
+	private void assignCategoryFromDB(int categoryId) {
+		Log.i(LOG_TAG, "assignCategoryFromDB(int categoryId) | " + categoryId);
+		CategoriesRepository categoriesRepository =
+				new CategoriesRepository(getApplicationContext());
+        category = categoriesRepository.getCategoryById(categoryId);
 	}
 
 
 	private void fillFields() {
+		Log.i(LOG_TAG, "void fillFields()");
+		
+		skbrPosition.setProgress(position_in_ids);
+		txvwPosition.setText( (position_in_ids+1) + " / " + array_ids.size() );
+		
 		if ( category != null ) {		
 			txvwId.setText(""+category.getId());
 			txvwName.setText(category.getName());
 			txvwItemsCount.setText(""+category.getCountItems());
-			skbrPosition.setProgress(last);
-			txvwPosition.setText( " " + (last+1) + " / " + ids.size() + " ");
 		} else {
 			clearFields();
-			Toast.makeText(getApplicationContext(), R.string.category_does_not_exist, Toast.LENGTH_SHORT).show();
-			// finish();
+			Toaster.showToast(getApplicationContext(),
+					  Toaster.ERROR,
+					  R.string.category_does_not_exist);
 		}
 	}
 
 	
+	
+	
+	
+	
 	private void clearFields() {
+		Log.i(LOG_TAG, "clearFields()");
 		txvwId.setText("");
 		txvwName.setText("");
 		txvwItemsCount.setText("");
-		skbrPosition.setProgress(last);
-		txvwPosition.setText( " " + (last+1) + " / " + ids.size() + " ");
 	}
 
+	
+	
+	
+	
 
-	private Dialog askConfirmation() {
-
+	private Dialog askConfirmationForDelete() {
+		Log.i(LOG_TAG, "askConfirmationForDelete()");
 		Dialog d = new AlertDialog.Builder(this)
-		.setMessage(R.string.sureDelete)
+		.setMessage(R.string.sure_delete_category_and_nested_items)
 		.setNegativeButton(android.R.string.no, null)
 		.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					deleteCategory();
-				}
-			})
-		.create();
+		}}).create();
 		return d;
 	    }
-
 }

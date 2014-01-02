@@ -77,18 +77,16 @@ public class ItemListActivity extends Activity {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Intent i = new Intent(getApplicationContext(), ItemNewActivity.class);
-						startActivity(i);
+						Intent intent = new Intent(getApplicationContext(), ItemNewActivity.class);
+						intent.putExtra("CATEGORY_ID", categoryId);
+						startActivity(intent);
 				}});
 
 		lsvwList = (ListView)findViewById(R.id.itemList_lsvwList);
-		// ListView onClick, ouvre le show Item
 		lsvwList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-				Item item = (Item)lsvwList.getItemAtPosition(position);
 				Intent intent = new Intent(getApplicationContext(), ItemShowActivity.class);
-				intent.putExtra("ID", "" + item.getId());
 
 				// TODO : mettre ailleurs
 				ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -98,8 +96,8 @@ public class ItemListActivity extends Activity {
 					ids.add(  ((Item)lsvwList.getItemAtPosition(i)).getId()  );
 				}
 				
-				intent.putExtra("LAST", position);
-				intent.putExtra("IDS", ids);
+				intent.putExtra("POSITION_IN_IDS", position);
+				intent.putExtra("ARRAY_IDS", ids);
 				
 				startActivity(intent);
 			}});

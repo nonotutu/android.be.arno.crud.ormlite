@@ -14,10 +14,12 @@ public class Category {
 		
 	@DatabaseField(generatedId = true)
 	private int _id;
-	@DatabaseField	// ORM
+	@DatabaseField
 	private String name;
 
+	
 	public Category() {}
+	
 	
 	public String getName() {
 		return name;
@@ -25,6 +27,7 @@ public class Category {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 
 	public int getId() {
 		return this._id;
@@ -32,20 +35,24 @@ public class Category {
 	public void setId(int id) {
 		this._id = id;
 	}
+	
 
 	public String toString() {
 		String s = this.name;
 		return s;
 	}
 	
+	
 	public boolean isValid() {
-		if ( this.name.isEmpty() || this.name == null )
+		if ( this.name == null || this.name.isEmpty() )
 			return false;
 	return true;
 	}
 	
+	
 	public long getCountItems() {
-		ItemsRepository itemsRepos = new ItemsRepository(App.getContext());
+		ItemsRepository itemsRepos = 
+				new ItemsRepository(App.getContext());
 		return itemsRepos.getCount(this._id);
 	}
 	

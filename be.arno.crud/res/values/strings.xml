@@ -35,15 +35,23 @@
     <string name="item_not_updated">Item not updated</string>
     <string name="item_deleted">Item deleted</string>
     <string name="item_not_deleted">Item not deleted</string>
+    <string name="item_does_not_exist">Item doesn\'t exist</string>
+    <string name="sure_delete_item">Delete this item ?</string>
     
     <!-- Category -->
     <string name="category">Category</string>
     <string name="categories">Categories</string>
     <string name="categories_found">Categories found</string>
     <string name="category_count">Category count</string>
-    <string name="category_created">Item created</string>
-    <string name="category_not_created">Item not created</string>
+    <string name="category_created">Category created</string>
+    <string name="category_not_created">Category not created</string>
+    <string name="category_updated">Category updated</string>
+    <string name="category_not_updated">Category not updated</string>
+    <string name="category_deleted">Category deleted</string>
+    <string name="category_not_deleted">Category not deleted</string>
     <string name="category_does_not_exist">Category doesn\'t exist</string>
+    <string name="sure_delete_category_and_nested_items">
+        Delete this Category and all the Items nested ?</string>
     
     <!-- Buttons -->
     <string name="NEW">New</string>
@@ -60,7 +68,6 @@
     <string name="rating">Rating</string>
     <string name="close">Close</string>
     <string name="cancel">Cancel</string>
-    <string name="sureDelete">Delete this item ?</string>
     <string name="test">Test</string>
     <string name="fill">Fill</string>
     <string name="deleteAll">Delete all</string>

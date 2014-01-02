@@ -2,26 +2,25 @@ package be.arno.crud.items;
 
 import be.arno.crud.Helper;
 import be.arno.crud.R;
-import be.arno.crud.R.id;
-import be.arno.crud.R.layout;
+import be.arno.crud.Toaster;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.ToggleButton;
-import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 
-
 public class ItemEditActivity extends Activity {
+	
+	private static final String LOG_TAG = "ItemEditActivity";
 
 	private Item item;
 	
@@ -32,6 +31,32 @@ public class ItemEditActivity extends Activity {
 	private ToggleButton tgbtBool;
 	private ImageButton imbtImage;
 
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.actionbar_save, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case R.id.action_save:
+	        	int i = updateItemInDB();
+				if ( i == 1 ) {
+					Toaster.showToast(getApplicationContext(),
+									  Toaster.SUCCESS, R.string.item_updated);
+					finish();
+				} else {
+					Toaster.showToast(getApplicationContext(),
+							  		  Toaster.ERROR, R.string.item_not_updated);
+				}
+				return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,100 +70,76 @@ public class ItemEditActivity extends Activity {
 		tgbtBool =   (ToggleButton)findViewById(R.id.itemForm_tgbtBool);
 		imbtImage =  (ImageButton) findViewById(R.id.itemForm_imbtImage);
 		
+		/*
 		Button bttnUpdate = (Button)findViewById(R.id.itemEdit_bttnUpdate);
 		bttnUpdate.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				long l = updateItemInDB();
-				Log.i("Item/Edit", "Updated: " + l);
-				if ( l == 1 ) {
-					Toast.makeText(getApplicationContext(), "Item updated", Toast.LENGTH_SHORT).show();
-					setResult(RESULT_OK);
+				int i = updateItemInDB(); // TODO : vérifier codes retour
+				if ( i == 1 ) {
+					Toast.makeText(getApplicationContext(),
+							R.string.item_updated, Toast.LENGTH_SHORT).show();
 					finish();
 				} else {
-					Toast.makeText(getApplicationContext(), "Item not updated", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), 
+							R.string.item_not_updated, Toast.LENGTH_SHORT).show();
 				}
-			}
-		});
+		}});*/
 
-		// récupérer l'ID dans le Bundle
-		int id = getIdFromParams();
-		
-		// récupérer l'item de la DB
-		getItemFromDB(id);
-		
-		// afficher les informations
+		assignItemFromDB(getIdFromBundle());
+				
 		fillFields();
 	}
 
 
-	private int getIdFromParams() {
-
-		String strId = null;
-		int intId;
-		
+	private int getIdFromBundle() {
+		Log.i(LOG_TAG, "int getIdFromBundle()");
+		int id = -1;
 		Bundle extra = this.getIntent().getExtras();
-		if ( extra != null ) {
-			strId = extra.getString("ID");
-			Log.i("edit", strId);
-		}
-		try {
-			intId = Integer.parseInt(strId);
-			return intId;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			Toast.makeText(getApplicationContext(), "Not an integer", Toast.LENGTH_LONG).show();
-			finish();
-		}
-		return -1;
+		if ( extra != null ) 
+			id = extra.getInt("ID");
+		Log.i(LOG_TAG, "int getIdFromBundle() return : " + id);
+		return id;
 	}
 
 
-	private void getItemFromDB(int id) {
-		
-		ItemsRepository repos; // ORM
-
-		//init the comments repository
-        repos = new ItemsRepository(this); // ORM
-        //get all comments
-        item = repos.getItemById(id); // ORM
-
-		/* -ORM
-		Item i;
-		ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
-		itemAdapter.openReadable();
-		i = itemAdapter.getItemById(id);
-		itemAdapter.close();
-		item = i;*/
+	private void assignItemFromDB(int itemId) {
+		Log.i(LOG_TAG, "int getIdFromBundle(int itemId) | " + itemId);
+		ItemsRepository itemsRepository =
+				new ItemsRepository(this);
+        item = itemsRepository.getItemById(itemId);
+        // termine l'activité si l'Item n'existe pas dans la DB
+        if ( item == null ) {
+			Toaster.showToast(getApplicationContext(),
+					  Toaster.ERROR,
+					  R.string.item_does_not_exist);
+			finish();        	
+        }
 	}
 	
 
-	private long updateItemInDB() {
-		
+	private int updateItemInDB() {
+		Log.i(LOG_TAG, "int updateItemInDB()");
+
 		String date = null;
-
 		if ( swchDate.isChecked() )		
-			date = Helper.dateInts2String(dtpkDate.getYear(), dtpkDate.getMonth(), dtpkDate.getDayOfMonth());
-
+			date = Helper.dateInts2String(dtpkDate.getYear(),
+										  dtpkDate.getMonth(),
+										  dtpkDate.getDayOfMonth());
 		Item i = new Item();
-		i.setId    (item.getId());
-		i.setName  (edtxName.getText().toString());
-		i.setDate  (date);
-		i.setRating(rtbrRating.getRating());
-		i.setBool  (tgbtBool.isChecked()?1:0);
-		i.setImage (((BitmapDrawable)imbtImage.getDrawable()).getBitmap());
+		i.setId    	 (item.getId());
+		i.setCategory(item.getCategoryId());
+		i.setName  	 (edtxName.getText().toString());
+		i.setDate    (date);
+		i.setRating  (rtbrRating.getRating());
+		i.setBool    (tgbtBool.isChecked()?1:0);
+		i.setImage   (((BitmapDrawable)imbtImage.getDrawable()).getBitmap());
 		
-		ItemsRepository repos = new ItemsRepository(getApplicationContext());
-		return repos.update(i);
-		
-		/* -ORM
-		ItemDBAdapter itemAdapter = new ItemDBAdapter(getApplicationContext());
-		itemAdapter.openWritable();
-		l = itemAdapter.update(i);
-		itemAdapter.close();
-		*/
-
-		//return l;
+		ItemsRepository itemsRepository = 
+				new ItemsRepository(getApplicationContext());
+		int ii = itemsRepository.update(i);
+		Log.i(LOG_TAG, "int updateItemInDB() | return : " + ii);
+		return ii;
 	}
 
 	
@@ -148,14 +149,12 @@ public class ItemEditActivity extends Activity {
 			edtxName.setText(item.getName());
 			if ( item.getDate() != null ) {
 					swchDate.setChecked(true);
-					dtpkDate.updateDate(item.getDatePart("yyyy"), item.getDatePart("MM")-1, item.getDatePart("dd"));
-			}
+					dtpkDate.updateDate(item.getDatePart("yyyy"),
+										item.getDatePart("MM")-1, 
+										item.getDatePart("dd")); }
 			rtbrRating.setRating(item.getRating());
 			tgbtBool.setChecked(item.getBool()==1?true:false);
 			imbtImage.setImageBitmap(item.getImage());			
-		} else {
-			Toast.makeText(getApplicationContext(), "Item doesn't exist", Toast.LENGTH_LONG).show();
-			finish();
 		}
 	}
 }

@@ -1,28 +1,59 @@
 package be.arno.crud.categories;
 
 import be.arno.crud.R;
-import be.arno.crud.Helper;
+import be.arno.crud.Toaster;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.DatePicker;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.RatingBar;
-import android.widget.Switch;
-import android.widget.Toast;
-import android.widget.ToggleButton;
+
+
+
+
+
+
 
 public class CategoryNewActivity extends Activity {
 
 	private static final String LOG_TAG = "CategoryNewActivity";
 	
 	private EditText edtxName;
-		
+
+	
+	
+	
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.actionbar_save, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	        case R.id.action_save:
+				int i = createCategoryInDB();
+				if ( i == 1 ) {
+					Toaster.showToast(getApplicationContext(),
+							Toaster.SUCCESS, R.string.category_created);
+					finish();
+				} else {
+					Toaster.showToast(getApplicationContext(),
+							Toaster.ERROR, R.string.category_not_created);
+				}
+				return true;
+	        default:
+	            return super.onOptionsItemSelected(menuItem);
+	    }
+	}	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,6 +63,12 @@ public class CategoryNewActivity extends Activity {
 		
 		edtxName = (EditText)findViewById(R.id.categoryForm_edtxName);
 		
+		
+		
+		
+		
+		
+		/*
 		Button bttnSave = (Button)findViewById(R.id.categoryNew_bttnCreate);
 		bttnSave.setOnClickListener(new OnClickListener() {
 			@Override
@@ -39,23 +76,25 @@ public class CategoryNewActivity extends Activity {
 				Log.i(LOG_TAG, "bttnSave.onClick");
 				long l = create();
 				Log.i(LOG_TAG, "return code: " + l);
-				// TODO : vérifier tous les codes de retour
-				if ( l == -1 ) {
-					Toast.makeText(getApplicationContext(), R.string.category_not_created, Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(getApplicationContext(), R.string.category_created, Toast.LENGTH_SHORT).show();
+				if ( l == 1 ) {
+					Toast.makeText(getApplicationContext(),
+							R.string.category_created, Toast.LENGTH_SHORT).show();
 					finish();
+				} else {
+					Toast.makeText(getApplicationContext(),
+							R.string.category_not_created, Toast.LENGTH_SHORT).show();
 				}
-		}});
+		}});*/
 	}
 
-	private long create() {
+	private int createCategoryInDB() {
+		Log.i(LOG_TAG, "int createCategoryInDB()");
 		
 		Category category = new Category();
 		category.setName(edtxName.getText().toString());
 		
-		CategoriesRepository repos = new CategoriesRepository(getApplicationContext());
-		return repos.create(category);
+		CategoriesRepository categoriesRepository = 
+				new CategoriesRepository(getApplicationContext());
+		return categoriesRepository.create(category);
 	}
-	
 }

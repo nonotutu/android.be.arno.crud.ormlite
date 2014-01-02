@@ -1,5 +1,5 @@
 package be.arno.crud.items;
-
+// TODO : dépendances avec category + category_id obligatoire
 import java.io.ByteArrayOutputStream;
 
 import com.j256.ormlite.field.DataType;
@@ -9,7 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;	// ORM
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-@DatabaseTable(tableName = "items")	// ORM
+@DatabaseTable(tableName = "items")
 public class Item {
 
 	public static final String COLUMN_ID = "_id";
@@ -160,11 +160,13 @@ public class Item {
 	
 	
 	public boolean isValid() {
-		if ( this.name.isEmpty() || this.name == null )
+		if ( this._category_id < 1 ) // TODO : check dependencies
+			return false;
+		if ( this.name == null || this.name.isEmpty() )
 			return false;
 		if ( this.bool < 0 || this.bool > 1 )
 			return false;
-	return true;
+		return true;
 	}	
 	
 }

@@ -17,7 +17,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class CategoriesRepository { // ORM
+public class CategoriesRepository {
 	 
 	private static final String LOG_TAG = "CategoriesRepository";
 	
@@ -62,26 +62,31 @@ public class CategoriesRepository { // ORM
     }
     
     
-    // TODO : gérer codes retour
+    /* returns number of successfully created rows */
     public int create(Category category) {
-    	Log.i(LOG_TAG, "public int create(Item)");
-        try {
-            return categoriesDao.create(category);
-        } catch (SQLException e) {
-            // TODO: Exception Handling
-            e.printStackTrace();
-        }
+    	Log.i(LOG_TAG, "int create(Category) | .getId()" + category.getId());
+    	if ( category.isValid() ) {
+	        try {
+	            return categoriesDao.create(category);
+	        } catch (SQLException e) {
+	            // TODO: Exception Handling
+	            e.printStackTrace();
+	        }
+    	}
         return 0;
     }
     
-    
+
+    /* return number of successfully updated rows */
     public int update(Category category) {
-        try {
-            return categoriesDao.update(category);
-        } catch (SQLException e) {
-            // TODO: Exception Handling
-            e.printStackTrace();
-        }
+		Log.i(LOG_TAG, "int update(Category) | .getId() : " + category.getId());
+		if ( category.isValid() ) {
+	        try {
+	            return categoriesDao.update(category);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		}
         return 0;
     }
     
