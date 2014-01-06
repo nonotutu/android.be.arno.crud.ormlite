@@ -1,6 +1,7 @@
 package be.arno.crud.categories;
 
 import be.arno.crud.R;
+import be.arno.crud.items.ItemNewActivity;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +42,13 @@ public class CategoryListActivity extends Activity {
 	private Button bttnFilter;  // Bouton du filtre
 	private TextView txvwCount; // Nombre de résultats
 	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.actionbar_new, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -46,6 +56,10 @@ public class CategoryListActivity extends Activity {
 	        case android.R.id.home:
 	            finish();
 	            return true;
+   	        case R.id.action_new:
+   				Intent intent = new Intent(getApplicationContext(), CategoryNewActivity.class);
+   				startActivity(intent);
+   	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -79,14 +93,14 @@ public class CategoryListActivity extends Activity {
 		
 		
 		
-		Button bttnNew = (Button)findViewById(R.id.categoryList_bttnNew);
+		/*Button bttnNew = (Button)findViewById(R.id.categoryList_bttnNew);
 		bttnNew.setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						Intent i = new Intent(getApplicationContext(), CategoryNewActivity.class);
 						startActivity(i);
-				}});
+				}});*/
 
 		
 		lsvwList = (ListView)findViewById(R.id.categoryList_lsvwList);
@@ -133,8 +147,8 @@ public class CategoryListActivity extends Activity {
 	private ArrayList<Category> getListFromDB() {
 
 		ArrayList<Category> categories = null;
-		CategoriesRepository repos = new CategoriesRepository(getApplicationContext());
-		categories = (ArrayList<Category>) repos.getAll();
+		CategoriesDataSourceSelector categoriesData = new CategoriesDataSourceSelector(getApplicationContext());
+		categories = (ArrayList<Category>) categoriesData.getAll();
 		return categories;
 	}
 

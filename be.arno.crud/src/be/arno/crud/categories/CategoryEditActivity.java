@@ -109,9 +109,9 @@ public class CategoryEditActivity extends Activity {
 
 	private void assignCategoryFromDB(int categoryId) {
 		Log.i(LOG_TAG, "int getIdFromBundle(int itemId) | " + categoryId);		
-		CategoriesRepository categoryRepository = 
-				new CategoriesRepository(getApplicationContext());
-        category = categoryRepository.getCategoryById(categoryId);
+		CategoriesDataSourceSelector categoriesData = 
+				new CategoriesDataSourceSelector(getApplicationContext());
+        category = categoriesData.getCategory(categoryId);
         // termine l'activité si la Category n'existe pas dans la DB
         if ( category == null ) {
         	Toaster.showToast(getApplicationContext(),
@@ -129,9 +129,9 @@ public class CategoryEditActivity extends Activity {
 		c.setId    (category.getId());
 		c.setName  (edtxName.getText().toString());
 		
-		CategoriesRepository categoriesRepository = 
-				new CategoriesRepository(getApplicationContext());
-		int i = categoriesRepository.update(c);
+		CategoriesDataSourceSelector categoriesData = 
+				new CategoriesDataSourceSelector(getApplicationContext());
+		int i = categoriesData.update(c);
 		Log.i(LOG_TAG, "int updateCategoryInDB() | return : " + i);
 		return i;
 	}

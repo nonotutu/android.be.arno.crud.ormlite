@@ -16,41 +16,22 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" >
-
     </ListView>
-
-    <Button
-        android:id="@+id/itemList_bttnNew"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/NEW" />
 
     <Button
         android:id="@+id/itemList_bttnSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/itemList_bttnNew"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:text="@string/search" />
-    
-    <Button
-        android:id="@+id/itemList_bttnFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/itemList_bttnSearch"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/filter" />
 
     <TextView
         android:id="@+id/itemList_txvwCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/itemList_bttnFilter"
+        android:layout_above="@+id/itemList_bttnSearch"
         android:layout_alignParentRight="true"
         android:text="@string/items_found" />
 

@@ -96,8 +96,8 @@ public class CategoryNewActivity extends Activity {
 		Category category = new Category();
 		category.setName(edtxName.getText().toString());
 		
-		CategoriesRepository categoriesRepository = 
-				new CategoriesRepository(getApplicationContext());
-		return categoriesRepository.create(category);
+		CategoriesDataSourceSelector categoriesData = 
+				new CategoriesDataSourceSelector(getApplicationContext());
+		return categoriesData.create(category);
 	}
 }

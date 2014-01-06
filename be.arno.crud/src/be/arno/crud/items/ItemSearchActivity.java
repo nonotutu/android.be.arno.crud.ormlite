@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -91,7 +92,7 @@ public class ItemSearchActivity extends Activity {
 		});
 		
 		
-		Button bttnSearch = (Button)findViewById(R.id.itemSearch_bttnSearch);
+		ImageButton bttnSearch = (ImageButton)findViewById(R.id.itemSearch_bttnSearch);
 		bttnSearch.setOnClickListener(
 				new OnClickListener() {
 					@Override
@@ -161,7 +162,7 @@ public class ItemSearchActivity extends Activity {
 		List<Item> items = new ArrayList<Item>();
 		
 		// Ouverture de la DB
-		ItemsRepository itemsRepository = new ItemsRepository(getApplicationContext());
+		ItemsDataSourceSelector itemsData = new ItemsDataSourceSelector(getApplicationContext());
 
 		// Boucle sur les 3 premiers mots
 		int i = 0;
@@ -174,7 +175,7 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à dddd-dd-dd ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont la date (non vérifiée) correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsRepository.getSearchOnDateLight(s));
+					items.addAll(itemsData.getSearchOnDate_light(s));
 				}
 			}
 			// Si le mot fait 7 caractères ...
@@ -184,7 +185,7 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à dddd-dd ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont l'année et le mois correspondent dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsRepository.getSearchOnYearMonthLight(s));
+					items.addAll(itemsData.getSearchOnYearMonth_light(s));
 				}
 			}
 			// Si le mot fait 4 caractères ...
@@ -194,13 +195,13 @@ public class ItemSearchActivity extends Activity {
 				// ... et qu'il correspond à un nombre de 4 chiffres ...
 				if ( matcher.matches() ) {
 				    // ... va chercher les items dont l'année correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsRepository.getSearchOnYearLight(s));
+					items.addAll(itemsData.getSearchOnYear_light(s));
 				}
 			}
 			// Si le mot fait au moins 2 caractères ...
 			if ( s.length() >= 2 )
 				// ... va chercher les items contenant le mot dans la DB et jes ajoute à la liste en cours 
-				items.addAll(itemsRepository.getSearchOnNameLight(s));
+				items.addAll(itemsData.getSearchOnName_light(s));
 			i = i + 1;
 		}
 

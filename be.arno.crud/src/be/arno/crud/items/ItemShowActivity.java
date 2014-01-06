@@ -13,10 +13,13 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
@@ -40,9 +43,19 @@ public class ItemShowActivity extends Activity {
 	private SeekBar skbrPosition;
 	private TextView txvwPosition;
 	private ImageView imvwImage;
+	private TextView txvwCreatedAt;
+	private TextView txvwUpdatedAt;
+
 	
 	private ArrayList<Integer> array_ids; // liste des ids
 	private int position_in_ids;	      // position dans la liste des ids
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.actionbar_edit_delete, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -50,6 +63,20 @@ public class ItemShowActivity extends Activity {
 	        case android.R.id.home:
 	            finish();
 	            return true;
+	        case R.id.action_edit:
+	        	if ( item != null ) {
+					Intent intent = new Intent(getApplicationContext(),
+							                   ItemEditActivity.class);
+					intent.putExtra("ID", item.getId() );
+					startActivity(intent);
+				}
+	        	return true;
+	        case R.id.action_delete:
+	        	if ( item != null ) {
+					Dialog dialog = askConfirmationForDelete();
+					dialog.show();
+				}
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -72,15 +99,18 @@ public class ItemShowActivity extends Activity {
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		txvwId =       (TextView) findViewById(R.id.itemShow_txvwId);
-		txvwCategory = (TextView) findViewById(R.id.itemShow_txvwCategory);
-		txvwName =     (TextView) findViewById(R.id.itemShow_txvwName);
-		txvwDate =     (TextView) findViewById(R.id.itemShow_txvwDate);
-		rtbrRating =   (RatingBar)findViewById(R.id.itemShow_rtbrRating);
-		txvwBool =     (TextView) findViewById(R.id.itemShow_txvwBool);
-		skbrPosition = (SeekBar)  findViewById(R.id.itemShow_skbrPosition);
-		txvwPosition = (TextView) findViewById(R.id.itemShow_txvwPosition);
-		imvwImage =    (ImageView)findViewById(R.id.itemShow_imvwImage);
+		txvwId =        (TextView) findViewById(R.id.itemShow_txvwId);
+		txvwCategory =  (TextView) findViewById(R.id.itemShow_txvwCategory);
+		txvwName =      (TextView) findViewById(R.id.itemShow_txvwName);
+		txvwDate =      (TextView) findViewById(R.id.itemShow_txvwDate);
+		rtbrRating =    (RatingBar)findViewById(R.id.itemShow_rtbrRating);
+		txvwBool =      (TextView) findViewById(R.id.itemShow_txvwBool);
+		skbrPosition =  (SeekBar)  findViewById(R.id.itemShow_skbrPosition);
+		txvwPosition =  (TextView) findViewById(R.id.itemShow_txvwPosition);
+		imvwImage =     (ImageView)findViewById(R.id.itemShow_imvwImage);
+		txvwCreatedAt = (TextView) findViewById(R.id.itemShow_txvwCreatedAt);
+		txvwUpdatedAt = (TextView) findViewById(R.id.itemShow_txvwUpdatedAt);
+
 		
 		
 		
@@ -91,7 +121,7 @@ public class ItemShowActivity extends Activity {
 		
 		
 		
-		Button bttnDelete = (Button)findViewById(R.id.itemShow_bttnDelete);
+		/*Button bttnDelete = (Button)findViewById(R.id.itemShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -99,10 +129,10 @@ public class ItemShowActivity extends Activity {
 					Dialog dialog = askConfirmationForDelete();
 					dialog.show();
 				}
-		}});
+		}});*/
 
 		
-		Button bttnEdit = (Button)findViewById(R.id.itemShow_bttnEdit);
+		/*Button bttnEdit = (Button)findViewById(R.id.itemShow_bttnEdit);
 		bttnEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -112,10 +142,10 @@ public class ItemShowActivity extends Activity {
 					intent.putExtra("ID", item.getId() );
 					startActivity(intent);
 				}
-		}});
+		}});*/
 
 		
-		Button bttnPrev = (Button)findViewById(R.id.itemShow_bttnPrev);
+		ImageButton bttnPrev = (ImageButton)findViewById(R.id.itemShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -127,7 +157,7 @@ public class ItemShowActivity extends Activity {
 		}});
 
 		
-		Button bttnNext = (Button)findViewById(R.id.itemShow_bttnNext);
+		ImageButton bttnNext = (ImageButton)findViewById(R.id.itemShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -166,9 +196,9 @@ public class ItemShowActivity extends Activity {
 
 	private void deleteItem() {
 		Log.i(LOG_TAG, "void deleteItem()");		
-		ItemsRepository itemsRepositories = 
-				new ItemsRepository(getApplicationContext());
-		itemsRepositories.delete(item);
+		ItemsDataSourceSelector itemsData = 
+				new ItemsDataSourceSelector(getApplicationContext());
+		itemsData.delete(item.getId());
 	
 		// TODO : vérifier si supprimé
 		finish();
@@ -199,9 +229,9 @@ public class ItemShowActivity extends Activity {
 
 	private void assignItemFromDB(int itemId) {
 		Log.i(LOG_TAG, "assignItemFromDB(int itemId)");
-		ItemsRepository itemsRepository =
-				new ItemsRepository(getApplicationContext());
-        item = itemsRepository.getItemById(itemId);
+		ItemsDataSourceSelector itemsData =
+				new ItemsDataSourceSelector(getApplicationContext());
+        item = itemsData.getById(itemId);
 	}
 
 
@@ -219,6 +249,8 @@ public class ItemShowActivity extends Activity {
 			rtbrRating.setRating(item.getRating());
 			txvwBool.setText(""+item.getBool());
 			imvwImage.setImageBitmap(item.getImage());
+			txvwCreatedAt.setText(""+item.getCreatedAt());
+			txvwUpdatedAt.setText(""+item.getUpdatedAt());
 		} else {
 			clearFields();
 			Toaster.showToast(getApplicationContext(),
@@ -229,7 +261,7 @@ public class ItemShowActivity extends Activity {
 	
 
 	private void clearFields() {
-		Log.i(LOG_TAG, "clearFields()");
+		Log.i(LOG_TAG, "void clearFields()");
 		txvwId.setText("");
 		txvwCategory.setText("");
 		txvwName.setText("");
@@ -237,11 +269,13 @@ public class ItemShowActivity extends Activity {
 		rtbrRating.setRating(0);
 		txvwBool.setText("");
 		imvwImage.setImageBitmap(null);
+		txvwCreatedAt.setText("");
+		txvwUpdatedAt.setText("");
 	}
 
 
 	private Dialog askConfirmationForDelete() {
-		Log.i(LOG_TAG, "askConfirmationForDelete()");
+		Log.i(LOG_TAG, "Dialog askConfirmationForDelete()");
 		Dialog d = new AlertDialog.Builder(this)
 		.setMessage(R.string.sure_delete_item)
 		.setNegativeButton(android.R.string.no, null)

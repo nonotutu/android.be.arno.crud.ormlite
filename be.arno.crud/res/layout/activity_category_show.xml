@@ -70,31 +70,34 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/categoryShow_txvwPosition"
         android:layout_alignParentLeft="true"
+        android:drawableLeft="@drawable/ic_action_view_as_list"
         android:text="@string/items" />
     
-    <Button
+    <ImageButton
         android:id="@+id/categoryShow_bttnNext"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_above="@+id/categoryShow_bttnEdit"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/categoryShow_txvwPosition"
-        android:text="@string/next" />
+		android:contentDescription="@string/next"
+		android:src="@drawable/ic_action_next_item" />
 
-    <Button
+    <ImageButton
         android:id="@+id/categoryShow_bttnPrev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/categoryShow_bttnEdit"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/categoryShow_bttnItems"
-        android:text="@string/previous" />
+		android:contentDescription="@string/previous"
+		android:src="@drawable/ic_action_previous_item" />
 
     <SeekBar
         android:id="@+id/categoryShow_skbrPosition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/categoryShow_bttnEdit"
+        android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/categoryShow_bttnNext"
         android:layout_toRightOf="@+id/categoryShow_bttnPrev" />
 
@@ -107,20 +110,20 @@
         android:layout_centerHorizontal="true"
         android:textAppearance="?android:attr/textAppearanceLarge" />	  
     
-    <Button
+    <!-- Button
         android:id="@+id/categoryShow_bttnEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/categoryShow_bttnDelete"
         android:layout_alignParentLeft="true"
-        android:text="@string/edit" />
+        android:text="@string/edit" /-->
 
-    <Button
+    <!-- Button
         android:id="@+id/categoryShow_bttnDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="@string/delete" />
+        android:text="@string/delete" /-->
 
 </RelativeLayout>

@@ -48,6 +48,7 @@ public class ItemNewActivity extends Activity {
 					Toaster.showToast(getApplicationContext(),
 							Toaster.ERROR, R.string.item_not_created);
 				}
+				return true;
 	        case android.R.id.home:
 	            finish();
 	            return true;
@@ -100,16 +101,17 @@ public class ItemNewActivity extends Activity {
 										  dtpkDate.getMonth(),
 										  dtpkDate.getDayOfMonth());
 		Item item = new Item();
-		item.setCategory(getCategoryIdFromBundle());
+		item.setCategoryId(getCategoryIdFromBundle());
 		item.setName(edtxName.getText().toString());
 		item.setDate(date);
 		item.setRating(rtbrRating.getRating());
 		item.setBool(tgbtBool.isChecked()?1:0);		
 		// TODO : i.setImage
+
 		
-		ItemsRepository itemsRepository = 
-				new ItemsRepository(getApplicationContext());
-		return itemsRepository.create(item);
+		ItemsDataSourceSelector dataSource = new ItemsDataSourceSelector(getApplicationContext());
+		
+		return dataSource.create(item);
 	}
 	
 	private int getCategoryIdFromBundle() {

@@ -111,9 +111,9 @@ public class ItemEditActivity extends Activity {
 
 	private void assignItemFromDB(int itemId) {
 		Log.i(LOG_TAG, "int getIdFromBundle(int itemId) | " + itemId);
-		ItemsRepository itemsRepository =
-				new ItemsRepository(this);
-        item = itemsRepository.getItemById(itemId);
+		ItemsDataSourceSelector itemsData =
+				new ItemsDataSourceSelector(getApplicationContext());
+        item = itemsData.getById(itemId);
         // termine l'activité si l'Item n'existe pas dans la DB
         if ( item == null ) {
 			Toaster.showToast(getApplicationContext(),
@@ -134,16 +134,16 @@ public class ItemEditActivity extends Activity {
 										  dtpkDate.getDayOfMonth());
 		Item i = new Item();
 		i.setId    	 (item.getId());
-		i.setCategory(item.getCategoryId());
+		i.setCategoryId(item.getCategoryId());
 		i.setName  	 (edtxName.getText().toString());
 		i.setDate    (date);
 		i.setRating  (rtbrRating.getRating());
 		i.setBool    (tgbtBool.isChecked()?1:0);
 		i.setImage   (((BitmapDrawable)imbtImage.getDrawable()).getBitmap());
 		
-		ItemsRepository itemsRepository = 
-				new ItemsRepository(getApplicationContext());
-		int ii = itemsRepository.update(i);
+		ItemsDataSourceSelector itemsData = 
+				new ItemsDataSourceSelector(getApplicationContext());
+		int ii = itemsData.update(i);
 		Log.i(LOG_TAG, "int updateItemInDB() | return : " + ii);
 		return ii;
 	}

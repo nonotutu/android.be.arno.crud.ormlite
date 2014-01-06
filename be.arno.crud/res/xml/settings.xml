@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+ 
+    <PreferenceCategory android:title="Databases" >
+        <EditTextPreference
+                android:title="Server URL"
+                android:key="serverUrl"/>
+     
+   	<ListPreference android:key="dataSource"
+    	android:title="Data source"
+	    android:entries="@array/dataSource_names"
+    	android:entryValues="@array/dataSource_values"
+    	android:defaultValue="local">
+	</ListPreference>
+    
+    </PreferenceCategory>
+   	
+</PreferenceScreen>

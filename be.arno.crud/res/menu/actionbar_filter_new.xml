@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/action_filter"
+        android:title="@string/filter"
+        android:icon="@drawable/ic_action_expand"
+        android:showAsAction="always" >
+    </item>
+    
+    <item
+        android:id="@+id/action_new"
+        android:title="@string/NEW"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="always" >
+    </item>
+    
+</menu>

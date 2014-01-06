@@ -18,20 +18,20 @@
         android:layout_alignParentTop="true" >
     </ListView>
 
-    <Button
+    <!-- Button
         android:id="@+id/categoryList_bttnNew"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:text="@string/NEW" />
+        android:text="@string/NEW" /-->
 
     <TextView
         android:id="@+id/categoryList_txvwCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/categoryList_bttnNew"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:text="@string/categories_found" />
 

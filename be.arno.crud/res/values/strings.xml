@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="hello_world">Hello world!</string>
     <string name="app_name">be.arno.crud</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    
+
     <!-- Activities Titles -->
     <string name="title_activity_item_index">Items</string>
     <string name="title_activity_item_new">New Item</string>
@@ -17,11 +17,16 @@
     <string name="title_activity_category_list">List Categories</string>
     <string name="title_activity_category_show">Show Category</string>
     <string name="title_activity_category_edit">Edit Category</string>
-    
+    <string name="title_activity_synchronization">SynchronizationActivity</string>
+
     <!-- ALL -->
     <string name="id">ID</string>
-    <string name="name">Name</string>    
-    
+    <string name="name">Name</string>
+    <string name="created_at">Created at</string>
+    <string name="updated_at">Updated at</string>
+    <string name="synced_at">Synced at</string>
+    <string name="remote_id">Remote ID</string>
+
     <!-- Item -->
     <string name="item">Item</string>
     <string name="items">Items</string>
@@ -37,7 +42,7 @@
     <string name="item_not_deleted">Item not deleted</string>
     <string name="item_does_not_exist">Item doesn\'t exist</string>
     <string name="sure_delete_item">Delete this item ?</string>
-    
+
     <!-- Category -->
     <string name="category">Category</string>
     <string name="categories">Categories</string>
@@ -50,9 +55,8 @@
     <string name="category_deleted">Category deleted</string>
     <string name="category_not_deleted">Category not deleted</string>
     <string name="category_does_not_exist">Category doesn\'t exist</string>
-    <string name="sure_delete_category_and_nested_items">
-        Delete this Category and all the Items nested ?</string>
-    
+    <string name="sure_delete_category_and_nested_items">Delete this Category and all the Items nested ?</string>
+
     <!-- Buttons -->
     <string name="NEW">New</string>
     <string name="filter">Filter</string>
@@ -71,7 +75,9 @@
     <string name="test">Test</string>
     <string name="fill">Fill</string>
     <string name="deleteAll">Delete all</string>
-    <string name="previous">←</string>
-    <string name="next">→</string>
-    
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="live">Live</string>
+    <string name="title_activity_app_prefs">AppPrefsActivity</string>
+
 </resources>

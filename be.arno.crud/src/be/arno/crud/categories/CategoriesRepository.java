@@ -91,16 +91,6 @@ public class CategoriesRepository {
     }
     
     
-    public int delete(Category category) {
-    	deleteNestedItems(category.getId());
-        try {
-            return categoriesDao.delete(category);
-        } catch (SQLException e) {
-            // TODO: Exception Handling
-            e.printStackTrace();
-        }
-        return 0;
-    }
 
     
     public int delete(int id) {

@@ -12,14 +12,14 @@
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/itemShow_bttnEdit"
+        android:layout_above="@+id/itemShow_bttnNext"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="378dp"
             android:orientation="vertical" >
 
             <TextView
@@ -75,7 +75,6 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+id/itemShow_txvwRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rating"
@@ -88,7 +87,6 @@
                 android:isIndicator="true" />
 
             <TextView
-                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/bool" />
@@ -97,26 +95,81 @@
                 android:id="@+id/itemShow_txvwBool"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Large Text"
+                android:text="@string/bool"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/created_at"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/itemShow_txvwCreatedAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/created_at"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updated_at"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/itemShow_txvwUpdatedAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updated_at"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <!-- TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/synced_at"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/itemShow_txvwSyncedAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/synced_at"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remote_id"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/itemShow_txvwRemoteId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remote_id"
+                android:textAppearance="?android:attr/textAppearanceLarge" /-->
+            
+            
         </LinearLayout>
     </ScrollView>
 
-    <Button
+    <!-- Button
         android:id="@+id/itemShow_bttnEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/itemShow_bttnDelete"
         android:layout_alignParentLeft="true"
-        android:text="@string/edit" />
+        android:layout_alignParentRight="true"
+        android:text="@string/edit" /-->
 
-    <Button
+    <!-- Button
         android:id="@+id/itemShow_bttnDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="@string/delete" />
+        android:text="@string/delete" /-->
 
     <ImageView
         android:id="@+id/itemShow_imvwImage"
@@ -127,31 +180,25 @@
         android:scaleType="fitXY"
         android:src="@drawable/ic_launcher" />
 
-    <Button
+    <ImageButton
         android:id="@+id/itemShow_bttnNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/itemShow_bttnEdit"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/itemShow_txvwPosition"
-        android:text="@string/next" />
+		android:contentDescription="@string/next"
+		android:src="@drawable/ic_action_next_item" />
 
-    <Button
+    <ImageButton
         android:id="@+id/itemShow_bttnPrev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/scrollView1"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/itemShow_txvwPosition"
-        android:text="@string/previous" />
-
-    <SeekBar
-        android:id="@+id/itemShow_skbrPosition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/scrollView1"
-        android:layout_toLeftOf="@+id/itemShow_bttnNext"
-        android:layout_toRightOf="@+id/itemShow_bttnPrev" />
+		android:contentDescription="@string/previous"
+		android:src="@drawable/ic_action_previous_item" />
 
     <TextView
         android:id="@+id/itemShow_txvwPosition"
@@ -159,6 +206,15 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/itemShow_skbrPosition"
         android:layout_centerHorizontal="true"
+        android:text="# / #"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <SeekBar
+        android:id="@+id/itemShow_skbrPosition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/itemShow_bttnNext"
+        android:layout_toRightOf="@+id/itemShow_bttnPrev" />
 
 </RelativeLayout>

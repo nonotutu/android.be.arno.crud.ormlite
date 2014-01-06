@@ -20,6 +20,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 								  // ORM
 public class CatemDBHelper extends OrmLiteSqliteOpenHelper {
+	
+	private static final String LOG_TAG = "CatemDBHelper";
 
     private static final String DATABASE_NAME = "catems";
     private static final int DATABASE_VERSION = 1;
@@ -37,10 +39,10 @@ public class CatemDBHelper extends OrmLiteSqliteOpenHelper {
 	public CatemDBHelper(Context context, String name, CursorFactory factory, int version) {
 		super(context, name, factory, version);
 	}
-											// ORM
+
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		
-		try { // ORM
+		try {
 			TableUtils.createTable(connectionSource, Item.class);
 			TableUtils.createTable(connectionSource, Category.class);
 		} catch (SQLException e) { e.printStackTrace(); }
@@ -52,10 +54,10 @@ public class CatemDBHelper extends OrmLiteSqliteOpenHelper {
 		
 	}
 	
-											 // ORM
+
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
 		
-		Log.i("DatabaseHelper", "onUpgrade");
+		Log.i(LOG_TAG, "void onUpgrade(SQLiteDatabase, ConnectionSource, int, int)");
 		// TODO : ORMiser
 		
 	}

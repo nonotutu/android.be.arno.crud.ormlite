@@ -1,7 +1,7 @@
 package be.arno.crud.categories;
 
 import be.arno.crud.App;
-import be.arno.crud.items.ItemsRepository;
+import be.arno.crud.items.ItemsDataSourceSelector;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -51,9 +51,9 @@ public class Category {
 	
 	
 	public long getCountItems() {
-		ItemsRepository itemsRepos = 
-				new ItemsRepository(App.getContext());
-		return itemsRepos.getCount(this._id);
+		ItemsDataSourceSelector itemsData = 
+				new ItemsDataSourceSelector(App.getContext());
+		return itemsData.getCount(this._id);
 	}
 	
 	

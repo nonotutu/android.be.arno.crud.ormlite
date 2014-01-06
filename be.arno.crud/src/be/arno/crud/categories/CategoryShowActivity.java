@@ -13,10 +13,13 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -43,11 +46,32 @@ public class CategoryShowActivity extends Activity {
 	
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.actionbar_edit_delete, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 	    switch (menuItem.getItemId()) {
 	        case android.R.id.home:
 	            finish();
 	            return true;
+	        case R.id.action_edit:
+				if ( category != null ) {		
+					Intent intent = new Intent(getApplicationContext(),
+							                   CategoryEditActivity.class);
+					intent.putExtra("ID", category.getId() );
+					startActivity(intent);
+				}
+				return true;
+	        case R.id.action_delete:
+	        	if ( category != null ) {
+					Dialog dialog = askConfirmationForDelete();
+					dialog.show();
+				}
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(menuItem);
 	    }
@@ -89,7 +113,7 @@ public class CategoryShowActivity extends Activity {
 		}});
 		
 		
-		Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
+		/*Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
 		bttnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -97,10 +121,10 @@ public class CategoryShowActivity extends Activity {
 					Dialog dialog = askConfirmationForDelete();
 					dialog.show();
 				}
-		}});
+		}});*/
 
 		
-		Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
+		/*Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
 		bttnEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -110,10 +134,10 @@ public class CategoryShowActivity extends Activity {
 					intent.putExtra("ID", category.getId() );
 					startActivity(intent);
 				}
-		}});
+		}});*/
 		
 		
-		Button bttnPrev = (Button)findViewById(R.id.categoryShow_bttnPrev);
+		ImageButton bttnPrev = (ImageButton)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -125,7 +149,7 @@ public class CategoryShowActivity extends Activity {
 		}});
 		
 		
-		Button bttnNext = (Button)findViewById(R.id.categoryShow_bttnNext);
+		ImageButton bttnNext = (ImageButton)findViewById(R.id.categoryShow_bttnNext);
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -164,9 +188,9 @@ public class CategoryShowActivity extends Activity {
 
 	private void deleteCategory() {
 		Log.i(LOG_TAG, "void deleteCategory()");		
-		CategoriesRepository categoriesRepository = 
-				new CategoriesRepository(getApplicationContext());
-		categoriesRepository.delete(category);
+		CategoriesDataSourceSelector categoriesData = 
+				new CategoriesDataSourceSelector(getApplicationContext());
+		categoriesData.delete(category.getId());
 	
 		// TODO : vérifier si supprimé
 		finish();
@@ -197,9 +221,9 @@ public class CategoryShowActivity extends Activity {
 
 	private void assignCategoryFromDB(int categoryId) {
 		Log.i(LOG_TAG, "assignCategoryFromDB(int categoryId) | " + categoryId);
-		CategoriesRepository categoriesRepository =
-				new CategoriesRepository(getApplicationContext());
-        category = categoriesRepository.getCategoryById(categoryId);
+		CategoriesDataSourceSelector categoriesData =
+				new CategoriesDataSourceSelector(getApplicationContext());
+        category = categoriesData.getCategory(categoryId);
 	}
 
 
