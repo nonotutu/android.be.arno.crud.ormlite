@@ -151,8 +151,9 @@ public class ItemShowActivity extends Activity {
 			public void onClick(View v) {
 				if ( position_in_ids > 0 ) {
 					position_in_ids = position_in_ids - 1;
-					assignItemFromDB(array_ids.get(position_in_ids));
-					fillFields();
+					onStart();
+					//assignItemFromDB(array_ids.get(position_in_ids));
+					//fillFields();
 				}
 		}});
 
@@ -163,8 +164,9 @@ public class ItemShowActivity extends Activity {
 			public void onClick(View v) {
 				if ( position_in_ids < array_ids.size()-1 ) {
 					position_in_ids = position_in_ids + 1;
-					assignItemFromDB(array_ids.get(position_in_ids));
-					fillFields();
+					onStart();
+					//assignItemFromDB(array_ids.get(position_in_ids));
+					//fillFields();
 				}
 		}});
 
@@ -174,8 +176,9 @@ public class ItemShowActivity extends Activity {
 				@Override
 				public void onStopTrackingTouch(SeekBar seekBar) {
 					position_in_ids = seekBar.getProgress();
-					assignItemFromDB(array_ids.get(position_in_ids));
-					fillFields();
+					onStart();
+					//assignItemFromDB(array_ids.get(position_in_ids));
+					//fillFields();
 				}
 				@Override
 				public void onStartTrackingTouch(SeekBar seekBar) {

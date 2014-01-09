@@ -1,5 +1,6 @@
 package be.arno.crud.categories;
 
+import android.content.Context;
 import be.arno.crud.App;
 import be.arno.crud.items.ItemsDataSourceSelector;
 
@@ -49,11 +50,11 @@ public class Category {
 	return true;
 	}
 	
-	
-	public long getCountItems() {
+
+	public long getCountItems(Context context, long[] limitoffset) {
 		ItemsDataSourceSelector itemsData = 
-				new ItemsDataSourceSelector(App.getContext());
-		return itemsData.getCount(this._id);
+				new ItemsDataSourceSelector(context);
+		return itemsData.getCount(this._id, limitoffset);
 	}
 	
 	

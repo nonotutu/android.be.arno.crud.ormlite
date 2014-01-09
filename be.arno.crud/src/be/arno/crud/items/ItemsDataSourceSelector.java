@@ -2,17 +2,40 @@ package be.arno.crud.items;
 
 import java.util.List;
 
+import be.arno.crud.App;
+
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class ItemsDataSourceSelector {
 
 	private static final String LOG_TAG = "ItemsDataSourceSelector";
 
+	private static final int DS_LOCAL = 1;
+	private static final int DS_HTTP = 2;
+
+	private int dataSource = 0;
+	
     private ItemsRepository repos;
+    private ItemsServer server;
+    
     
     public ItemsDataSourceSelector(Context context) {
-    	this.repos = new ItemsRepository(context);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		String dataSource = settings.getString("dataSource", null);
+
+		if ( dataSource.equals("local")) {
+			this.dataSource = DS_LOCAL;
+	    	this.repos = new ItemsRepository(context);			
+		}
+		if ( dataSource.equals("httpServer")) {
+			this.dataSource = DS_HTTP;
+	    	this.server = new ItemsServer(context);
+		}
+
     }
 
     
@@ -49,10 +72,10 @@ public class ItemsDataSourceSelector {
     	return null;
     }
     
-    
+    /*
     public List<Item> getAll() {
     	return repos.getAll();
-    }
+    }*/
  
     
     public int deleteAll() {
@@ -64,54 +87,76 @@ public class ItemsDataSourceSelector {
     	return repos.deleteAll(categoryId);
     }
     		
-
+    // TODO : codes de retour
     public long getCount() {
-    	return repos.getCount();
+    	
+    	switch(dataSource) {
+    	case DS_LOCAL:
+        	return repos.getCount();
+    	case DS_HTTP:
+    		return server.getCount();
+    	}
+    	
+    	return -4;
     }
    
-    
+    /*
     public long getCount(int categoryId) {
     	return repos.getCount(categoryId);
+    }*/
+
+    public long getCount(int categoryId, long[] limitoffset) {
+    	
+    	switch(dataSource) {
+    	case DS_LOCAL:
+    		//if ( limitoffset == null ) return getCount(categoryId);
+        	return repos.getCount(categoryId, limitoffset);
+    	case DS_HTTP:
+    		return 8888;
+    	}
+    	return -1;
     }
     
-
+    /*
     public List<Item> getAll_light() {
     	return repos.getAll_light();
-    }
+    }*/
   
-
+    /*
     public List<Item> getAll_light(int categoryId) {
     	return repos.getAll_light(categoryId);
-    }
+    }*/
     
-     
-    public List<Item> getSearchOnYear_light(String searchYear) {
-    	return repos.getSearchOnYear_light(searchYear);
-    }
-
-    
-    public List<Item> getSearchOnYearMonth_light(String searchYearMonth) {
-		return repos.getSearchOnYearMonth_light(searchYearMonth);
-    }
-
-
-    public List<Item> getSearchOnDate_light(String searchDate) {
-    	return repos.getSearchOnDate_light(searchDate);
+    public List<Item> getAll_light(int categoryId, long[] limitoffset) {
+    	
+    	switch(dataSource) {
+    	case DS_LOCAL:
+    		return repos.getAll_light(categoryId, limitoffset);
+    	case DS_HTTP:
+    		return server.getAll_light(categoryId, limitoffset);
+    	}
+    	return null;
     }
     
 
-    public List<Item> getSearchOnName_light(String searchName) {
-    	return repos.getSearchOnName_light(searchName);
+    public List<Item> getSearchOnYear_light(String searchYear, long[] limitoffset) {
+    	return repos.getSearchOnYear_light(searchYear, limitoffset);
+    }
+
+ 
+
+    public List<Item> getSearchOnName_light(String searchName, long[] limitoffset) {
+    	return repos.getSearchOnName_light(searchName, limitoffset);
     }
 
     
-    public List<Item> getOnlyWithDate_light(int categoryId) {
-    	return repos.getOnlyWithDate_light(categoryId);
+    public List<Item> getOnlyWithDate_light(int categoryId, long[] limitoffset) {
+    	return repos.getOnlyWithDate_light(categoryId, limitoffset);
     }
     
 
-    public List<Item> getOnlyBool_light(int categoryId, int bool) {
-    	return repos.getOnlyBool_light(categoryId, bool);    	
+    public List<Item> getOnlyBool_light(int categoryId, int bool, long[] limitoffset) {
+    	return repos.getOnlyBool_light(categoryId, bool, limitoffset);    	
     }  
     
 }

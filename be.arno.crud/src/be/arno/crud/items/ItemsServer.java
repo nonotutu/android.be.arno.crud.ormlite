@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -23,8 +24,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 
@@ -32,14 +35,17 @@ public class ItemsServer {
 	 
 	private static final String LOG_TAG = "ItemsServer";
 	
-	public static final String ADDRESS = "http://192.168.1.210:3000/items";
+	//public static final String ADDRESS = "http://192.168.1.210:3000/items";
 
 	private Context context;
+	public String address = null;
 	
     
     public ItemsServer(Context context) {
     	Log.i(LOG_TAG, "public ItemsServer(Context)");
     	this.context = context;
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+		this.address = settings.getString("serverUrl", null);
     }
     
     
@@ -120,11 +126,36 @@ public class ItemsServer {
 
     
     public long getCount() {
-    	return 0;
+	    Log.i(LOG_TAG, "long getCount()");
+		
+		AST_count task = new AST_count();
+		task.execute();
+	
+		long result = -4;
+	
+		try { result = task.get(); }
+		catch (Exception e) { e.printStackTrace(); }
+	
+		Log.i(LOG_TAG, "long getCount result: " + result);
+	
+		return result;
     }
     
-    public List<Item> getAllLight() {
-    	return null;
+    
+    public List<Item> getAll_light(long categoryId, long[] limitoffset) {
+	    Log.i(LOG_TAG, "List<Item> getAll_light(int, long[])");
+		
+		AST_getAll_light task = new AST_getAll_light();
+		task.execute(categoryId, limitoffset[0], limitoffset[1]);
+
+		List<Item> result = new ArrayList<Item>();
+		
+		try { result = task.get(); }
+		catch (Exception e) { e.printStackTrace(); }
+	
+		Log.i(LOG_TAG, "long getCount result: " + result);
+	
+		return result;
     }
     
     
@@ -176,7 +207,7 @@ public class ItemsServer {
 			try {
 				
 				HttpClient httpClient = new DefaultHttpClient();
-				HttpDelete httpDelete = new HttpDelete(ADDRESS + "/" + id[0]);
+				HttpDelete httpDelete = new HttpDelete(address + "/" + id[0]);
 				
 				HttpResponse httpResponse = httpClient.execute(httpDelete);
 				
@@ -233,7 +264,7 @@ public class ItemsServer {
 				
 				HttpClient httpClient = new DefaultHttpClient();
 
-				HttpPost httpPost = new HttpPost(ADDRESS);
+				HttpPost httpPost = new HttpPost(address);
 				
 				String toPost = "";
 				
@@ -298,7 +329,7 @@ public class ItemsServer {
 				
 				HttpClient httpClient = new DefaultHttpClient();
 
-				HttpGet httpGet = new HttpGet(ADDRESS + "_ids");
+				HttpGet httpGet = new HttpGet(address + "_ids");
 				
 				httpGet.setHeader("Accept", "application/json");
 				httpGet.setHeader("Content-type", "application/json");
@@ -341,6 +372,134 @@ public class ItemsServer {
 			return null;
 		}
 	}
+    
+    
+    
+    
+
+    private class AST_count extends AsyncTask<Void, Void, Long> {
+
+		@Override
+		protected Long doInBackground(Void... v) {
+			
+			Log.i(LOG_TAG, "AST_count | Long doInBackground(Void... v)");
+			
+			InputStream inputStream = null;
+			BufferedReader bufferedReader = null;
+	
+			String result = null;
+			
+			try {
+				
+				HttpClient httpClient = new DefaultHttpClient();
+
+				HttpGet httpGet = new HttpGet(address + "items/root_count");
+				
+				Log.i(LOG_TAG, "HttpGet (" + address + "items/root_count" + ")");
+				
+				httpGet.setHeader("Accept", "application/json");
+				httpGet.setHeader("Content-type", "application/json");
+				
+				HttpResponse httpResponse = httpClient.execute(httpGet);
+				inputStream = httpResponse.getEntity().getContent();
+				
+				if(inputStream != null)
+	                result = convertInputStreamToString(inputStream);
+
+				JSONObject jsonReturned = new JSONObject(result.toString());
+								
+				if ( ! jsonReturned.isNull("count") ) {
+					long count = jsonReturned.getLong("count");
+					return count;
+				} else {
+					return Long.valueOf(-2);
+				}
+				
+			} catch (Exception e) {
+				Log.e("LOG_TAG", "Exception: " + e.getMessage());
+				return Long.valueOf(-3);
+			} finally {
+				if (bufferedReader != null) {
+					try {
+						bufferedReader.close();
+					} catch (IOException e) {
+						Log.e("LOG_TAG", "IOException: " + e.getMessage());
+					}
+				}
+			}
+			//return Long.valueOf(-4);
+		}
+	}
+    
+    
+
+    private class AST_getAll_light extends AsyncTask<Long, Void, List<Item>> {
+
+		@Override
+		protected List<Item> doInBackground(Long... categoryId_limit_offset) {
+			
+			Log.i(LOG_TAG, "AST_getAll_light - doInBackground(Integer... categoryId)");
+			
+			String result = null;
+	
+			try {
+				
+				HttpClient httpClient = new DefaultHttpClient();
+
+				HttpGet httpGet = new HttpGet(address + 
+						"categories/" + categoryId_limit_offset[0] + "/items" +
+						"?limit=" + categoryId_limit_offset[1] +
+						"&offset=" + categoryId_limit_offset[2]);
+								
+				httpGet.setHeader("Accept", "application/json");
+				httpGet.setHeader("Content-type", "application/json");
+				
+				HttpResponse httpResponse = httpClient.execute(httpGet);
+
+				InputStream inputStream = httpResponse.getEntity().getContent();
+				if(inputStream != null) 
+	                result = convertInputStreamToString(inputStream);
+				
+				JSONArray jsonArray = new JSONArray(result.toString());
+
+				List<Item> items = new ArrayList<Item>();
+				
+				String str2fl;
+				
+				if ( jsonArray != null ) {
+					Log.i(LOG_TAG, "jsonArray = " + jsonArray.toString());
+					for ( int i = 0; i < jsonArray.length() ; i+= 1 ) {
+						Item item = new Item();
+						item.setId(jsonArray.getJSONObject(i).getInt("id"));
+						item.setCategoryId(jsonArray.getJSONObject(i).getInt("category_id"));
+						item.setName(jsonArray.getJSONObject(i).getString("name"));
+						item.setDate(jsonArray.getJSONObject(i).getString("date"));
+						item.setBool(jsonArray.getJSONObject(i).getBoolean("bool")?1:0);
+						//item.setRating(Float.parseFloat(  ( jsonArray.getJSONObject(i).getString("rating"))==""?"0":jsonArray.getJSONObject(i).getString("rating")  ));
+						items.add(item);
+					}
+				}
+				
+				return items;
+				
+			} catch (Exception e) {
+				Log.e(LOG_TAG, "Exception: " + e.getMessage());
+			}
+			return null; // TODO retourner nouvelle list<item> vide ? sinon pointeur null vers liste affichée
+		}
+	}
+    
+    
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+ 
+        inputStream.close();
+        return result;
+    }
     
     
 }

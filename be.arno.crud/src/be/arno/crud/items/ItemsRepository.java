@@ -13,6 +13,7 @@ import be.arno.crud.CatemDBHelper;
 
 import com.j256.ormlite.android.AndroidDatabaseResults;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -133,14 +134,20 @@ public class ItemsRepository {
     	} catch (SQLException e) {}
     	return 0;
     }
-   
-    
-    public long getCount(int categoryId) {
+
+
+    /* Permet de compter via une boucle */
+    public long getCount(int categoryId, long[] limitoffset) {
+    	Log.i(LOG_TAG, "long getCount(int, long)");
     	try {
-    		return itemsDao.queryBuilder().selectColumns(Item.COLUMN_ID)
-    									  .where()
-    									  .eq(Item.COLUMN_CATEGORY_ID, categoryId)
-    									  .countOf();
+    		GenericRawResults<String[]> liste = itemsDao.queryBuilder().selectColumns(Item.COLUMN_ID)
+    						   .limit(limitoffset[0])
+    						   .offset(limitoffset[1])
+			   				   .where()
+    						   .eq(Item.COLUMN_CATEGORY_ID, categoryId)
+    						   .queryRaw();
+			List<String[]> results = liste.getResults();
+    		return results.size();
     	} catch (SQLException e) {}
     	return 0;
     }
@@ -201,9 +208,11 @@ public class ItemsRepository {
 
     /* ======== SEARCH ON DATE */
 
-    public Where<Item, Integer> getWhereSearchBetweenDates_light(String searchMin, String searchMax) {
+    public Where<Item, Integer> getWhereSearchBetweenDates_light(String searchMin, String searchMax, long[] limitoffset) {
     	try {
 	    	return itemsDao.queryBuilder()
+	    				   .limit(limitoffset[0])
+	    				   .offset(limitoffset[1])
 	    				   .selectColumns(Item.COLUMN_ID,
 	    						   		  Item.COLUMN_CATEGORY_ID,
 			         			   	  	  Item.COLUMN_NAME,
@@ -215,54 +224,34 @@ public class ItemsRepository {
     	return null;
     }
         
-    public List<Item> getSearchBetweenDates_light(String searchMin, String searchMax) {
+    public List<Item> getSearchBetweenDates_light(String searchMin, String searchMax, long[] limitoffset) {
         try {
-        	return getWhereSearchBetweenDates_light(searchMin, searchMax).query();
+        	return getWhereSearchBetweenDates_light(searchMin, searchMax, limitoffset).query();
         } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
-    public List<Item> getSearchBetweenDates_light(int categoryId, String searchMin, String searchMax) {
+    public List<Item> getSearchBetweenDates_light(int categoryId, String searchMin, String searchMax, long[] limitoffset) {
         try {
-        	return getWhereSearchBetweenDates_light(searchMin, searchMax).and().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
+        	return getWhereSearchBetweenDates_light(searchMin, searchMax, limitoffset).and().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
         } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
     public Cursor getCursorSearchBetweenDates_light(String searchMin, String searchMax) {
     	try {
-    		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereSearchBetweenDates_light(searchMin, searchMax).prepare()).getRawResults();
+    		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereSearchBetweenDates_light(searchMin, searchMax, null).prepare()).getRawResults();
     		return adr.getRawCursor();
 		} catch (SQLException e) { e.printStackTrace(); }
     	return null;
 	}
 
-    public List<Item> getSearchOnYear_light(String searchYear) {
-    	return getSearchBetweenDates_light(searchYear+"-01-01", searchYear+"-12-31");
+    public List<Item> getSearchOnYear_light(String searchYear, long[] limitoffset) {
+    	return getSearchBetweenDates_light(searchYear+"-01-01", searchYear+"-12-31", limitoffset);
     }
-    public List<Item> getSearchOnYear_light(int categoryId, String searchYear) {
-    	return getSearchBetweenDates_light(categoryId, searchYear+"-01-01", searchYear+"-12-31");
+    public List<Item> getSearchOnYear_light(int categoryId, String searchYear, long[] limitoffset) {
+    	return getSearchBetweenDates_light(categoryId, searchYear+"-01-01", searchYear+"-12-31", limitoffset);
     }
     public Cursor getCursorSearchOnYear_light(String searchYear) {
     	return getCursorSearchBetweenDates_light(searchYear+"-01-01", searchYear+"-12-31");
-	}
-
-    public List<Item> getSearchOnYearMonth_light(String searchYearMonth) {
-		return getSearchBetweenDates_light(searchYearMonth+"-01", searchYearMonth+"-31");
-    }
-    public List<Item> getSearchOnYearMonth_light(int categoryId, String searchYearMonth) {
-		return getSearchBetweenDates_light(categoryId, searchYearMonth+"-01", searchYearMonth+"-31");
-    }
-    public Cursor getCursorSearchOnYearMonth_light(String searchYearMonth) {
-		return getCursorSearchBetweenDates_light(searchYearMonth+"-01", searchYearMonth+"-31");
-	}
-
-    public List<Item> getSearchOnDate_light(String searchDate) {
-		return getSearchBetweenDates_light(searchDate, searchDate);
-    }
-    public List<Item> getSearchOnDate_light(int categoryId, String searchDate) {
-		return getSearchBetweenDates_light(categoryId, searchDate, searchDate);
-    }
-    public Cursor getCursorSearchOnDate_light(String searchDate) {
-		return getCursorSearchBetweenDates_light(searchDate, searchDate);
 	}
 
 
@@ -277,9 +266,27 @@ public class ItemsRepository {
 		return null;
     }
 
+    /*
     public Where<Item, Integer> getWhereAll_light(int categoryId) {
         try {
 	    	return itemsDao.queryBuilder()
+		            	   .selectColumns(Item.COLUMN_ID,
+			         			   	  	  Item.COLUMN_CATEGORY_ID,
+			         			   	  	  Item.COLUMN_NAME,
+			         			   	  	  Item.COLUMN_DATE,
+			         			   	  	  Item.COLUMN_BOOL)
+	    			       .where()
+	    			       .eq(Item.COLUMN_CATEGORY_ID, categoryId);
+		} catch(SQLException e) {}
+		return null;
+    }*/
+
+    public Where<Item, Integer> getWhereAll_light(int categoryId, long[] limitoffset) {
+    	if ( limitoffset == null ) limitoffset = new long[]{-1,-1};
+        try {
+	    	return itemsDao.queryBuilder()
+			    		   .limit(limitoffset[0])
+			    		   .offset(limitoffset[1])
 		            	   .selectColumns(Item.COLUMN_ID,
 			         			   	  	  Item.COLUMN_CATEGORY_ID,
 			         			   	  	  Item.COLUMN_NAME,
@@ -304,17 +311,25 @@ public class ItemsRepository {
 		} catch(SQLException e) {}
 		return null;
 	}
-    
+    /*
     public List<Item> getAll_light(int categoryId) {
         try {
 	    	return getWhereAll_light(categoryId).query();
 		} catch(SQLException e) {}
 		return null;
+    }*/
+
+    public List<Item> getAll_light(int categoryId, long[] limitoffset) {
+    	try {
+	    	return getWhereAll_light(categoryId, limitoffset).query();
+		} catch(SQLException e) {}
+		return null;
     }
+    
     
     public Cursor getCursorAll_light(int categoryId) {
         try {
-	   		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereAll_light(categoryId).prepare()).getRawResults();
+	   		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereAll_light(categoryId, null).prepare()).getRawResults();
 	   		return adr.getRawCursor();
 		} catch(SQLException e) {}
 		return null;
@@ -323,17 +338,20 @@ public class ItemsRepository {
     
     /* ======== SEARCH ON NAME */
     
-    public Where<Item, Integer> getWhereSearchOnName(String searchName) {
+    /*
+    public Where<Item, Integer> getWhereSearchOnName(String searchName, long[] offset) {
         try {
 	    	return itemsDao.queryBuilder().where()
 	    								  .like(Item.COLUMN_NAME, "%" + searchName + "%");
 		} catch(SQLException e) {}
 		return null;
-    }
+    }*/
     
-    public Where<Item, Integer> getWhereSearchOnName_light(String searchName) {
+    public Where<Item, Integer> getWhereSearchOnName_light(String searchName, long[] limitoffset) {
         try {
 	    	return itemsDao.queryBuilder()
+	    				   .limit(limitoffset[0])
+	    				   .offset(limitoffset[1])
 		            	   .selectColumns(Item.COLUMN_ID,
 		            			   	  	  Item.COLUMN_CATEGORY_ID,
 		            			   	  	  Item.COLUMN_NAME,
@@ -344,47 +362,50 @@ public class ItemsRepository {
 		} catch(SQLException e) {}
 		return null;
     }
-    	
+    
+    /*
     public Cursor getCursorSearchOnName(String searchName) {
         try {
 	   		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereSearchOnName(searchName).prepare()).getRawResults();
 	   		return adr.getRawCursor();
 		} catch(SQLException e) {}
 		return null;
-	}
+	}*/
     
+    /*
     public List<Item> getSearchOnName(String searchName) {
         try {
 	       	return getWhereSearchOnName(searchName).query();
 		} catch(SQLException e) {}
 		return null;
-    }
+    }*/
     
+    /*
     public List<Item> getSearchOnName(int categoryId, String searchName) {
         try {
 	       	return getWhereSearchOnName(searchName).and().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
 		} catch(SQLException e) {}
 		return null;
-    }
+    }*/
     
-    public Cursor getCursorSearchOnName_light(String searchName) {
+    public Cursor getCursorSearchOnName_light(String searchName, long[] limitoffset) {
         try {
-	   		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereSearchOnName_light(searchName).prepare()).getRawResults();
+	   		AndroidDatabaseResults adr = (AndroidDatabaseResults) itemsDao.iterator(getWhereSearchOnName_light(searchName, limitoffset).prepare()).getRawResults();
 	   		return adr.getRawCursor();
 		} catch(SQLException e) {}
 		return null;
 	}
     
-    public List<Item> getSearchOnName_light(String searchName) {
+    public List<Item> getSearchOnName_light(String searchName, long[] limitoffset) {
         try {
-    		return getWhereSearchOnName_light(searchName).query();
+    		return getWhereSearchOnName_light(searchName, limitoffset).query();
 		} catch(SQLException e) {}
 		return null;
     }
 
-    public List<Item> getSearchOnName_light(int categoryId, String searchName) {
+    public List<Item> getSearchOnName_light(int categoryId, String searchName ,long[] limitoffset) {
     	try {
-    		return getWhereSearchOnName_light(searchName).and().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
+    		return getWhereSearchOnName_light(searchName, limitoffset).and().eq(Item.COLUMN_CATEGORY_ID, categoryId).query();
     	} catch(SQLException e) {}
     	return null;
     }
@@ -392,9 +413,12 @@ public class ItemsRepository {
     
     /* ======== Filters */
 
-    public Where<Item, Integer> getWhereOnlyWithDate_light() {
+    public Where<Item, Integer> getWhereOnlyWithDate_light(long[] limitoffset) {
+    	if ( limitoffset == null ) limitoffset = new long[]{-1,-1} ;
     	try {
     		return itemsDao.queryBuilder()
+		    		   	   .limit(limitoffset[0])
+		    		   	   .offset(limitoffset[1])
 	    				   .selectColumns(Item.COLUMN_ID,
 	    						   		  Item.COLUMN_CATEGORY_ID,
 				       			  		  Item.COLUMN_NAME,
@@ -406,9 +430,9 @@ public class ItemsRepository {
     	return null;
     }
 
-    public List<Item> getOnlyWithDate_light(int categoryId) {
+    public List<Item> getOnlyWithDate_light(int categoryId, long[] limitoffset) {
         try {
-            return getWhereOnlyWithDate_light()
+            return getWhereOnlyWithDate_light(limitoffset)
             		.and()
 					.eq(Item.COLUMN_CATEGORY_ID, categoryId)
 					.query();
@@ -417,9 +441,12 @@ public class ItemsRepository {
     }
     
 
-    public Where<Item, Integer> getWhereOnlyBool_light(int bool) {
+    public Where<Item, Integer> getWhereOnlyBool_light(int bool, long[] limitoffset) {
+    	if ( limitoffset == null ) limitoffset = new long[]{-1,-1} ;
         try {
             return itemsDao.queryBuilder()
+			    		   .limit(limitoffset[0])
+			    		   .offset(limitoffset[1])
             			   .selectColumns(Item.COLUMN_ID,
             					   		  Item.COLUMN_CATEGORY_ID,
             					   		  Item.COLUMN_NAME,
@@ -431,9 +458,9 @@ public class ItemsRepository {
         return null;
     }
         
-    public List<Item> getOnlyBool_light(int categoryId, int bool) {
+    public List<Item> getOnlyBool_light(int categoryId, int bool, long[] limitoffset) {
         try {
-            return getWhereOnlyBool_light(bool)
+            return getWhereOnlyBool_light(bool, limitoffset)
             		.and()
 					.eq(Item.COLUMN_CATEGORY_ID, categoryId)
 					.query();

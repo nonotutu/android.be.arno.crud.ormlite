@@ -165,11 +165,11 @@ public class ItemContentProvider extends ContentProvider {
 
 			case ITEMS_SEARCH_ON_NAME_LIGHT:
 				Log.i(LOG_TAG, "Cursor query(Uri, String[], String, String[], String) | case ITEMS_SEARCH_ON_NAME_LIGHT");
-				c = repos.getCursorSearchOnName_light(selection);
-				c.setNotificationUri(getContext().getContentResolver(), uri);
-				return c;
+				//c = repos.getCursorSearchOnName_light(selection);
+				//c.setNotificationUri(getContext().getContentResolver(), uri);
+				//return c;
 
-			case ITEMS_SEARCH_ON_DATE_LIGHT:
+/*			case ITEMS_SEARCH_ON_DATE_LIGHT:
 				Log.i(LOG_TAG, "Cursor query(Uri, String[], String, String[], String) | case ITEMS_SEARCH_ON_DATE_LIGHT");
 				c = repos.getCursorSearchOnDate_light(selection);
 				c.setNotificationUri(getContext().getContentResolver(), uri);
@@ -180,7 +180,7 @@ public class ItemContentProvider extends ContentProvider {
 				c = repos.getCursorSearchOnYearMonth_light(selection);
 				c.setNotificationUri(getContext().getContentResolver(), uri);
 				return c;
-
+*/
 			case ITEMS_SEARCH_ON_YEAR_LIGHT:
 				Log.i(LOG_TAG, "Cursor query(Uri, String[], String, String[], String) | case ITEMS_SEARCH_ON_YEAR_LIGHT");
 				c = repos.getCursorSearchOnYear_light(selection);

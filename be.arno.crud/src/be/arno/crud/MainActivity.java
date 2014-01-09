@@ -1,5 +1,7 @@
 package be.arno.crud;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import be.arno.crud.R;
@@ -23,6 +25,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,22 +67,28 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		setCount();
+		displayDataSource();
 	}
 	
-	private void setCount() {
+	private void displayCount() {
 		CategoriesDataSourceSelector categoriesData = new CategoriesDataSourceSelector(getApplicationContext());
 		ItemsDataSourceSelector itemsData = new ItemsDataSourceSelector(getApplicationContext());
 		txvwCount.setText(categoriesData.getCount() + " - " + itemsData.getCount());
 		
-		
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		txvwDataSource.setText("Server : " + settings.getString("serverUrl", null));
 	}
 	
-	/*
 	
-	*/
+	private void displayDataSource() {
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String dataSource = settings.getString("dataSource", null);
+		
+		if ( dataSource != null ) {
+			if ( dataSource.equals("local"))
+				txvwDataSource.setText(getResources().getString(R.string.dataSource_local));
+			if ( dataSource.equals("httpServer"))
+				txvwDataSource.setText(getResources().getString(R.string.dataSource_httpServer) + " :\n" + settings.getString("serverUrl", null));
+		}
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +98,15 @@ public class MainActivity extends Activity {
 		txvwCount = (TextView)findViewById(R.id.main_txvwCount);
 		txvwDataSource = (TextView)findViewById(R.id.main_txvwDataSource);
 
+		txvwCount.setOnClickListener(
+			new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					displayCount();
+				}
+			}
+		);
+		
 		Button bttnCategories = (Button)findViewById(R.id.main_bttnCategories);
 		bttnCategories.setOnClickListener(new OnClickListener() {
 			@Override
@@ -207,7 +225,11 @@ public class MainActivity extends Activity {
 			
 			Item item;
 
-			int max = Pokemons.LIST.length;
+			String[] liste = getResources().getStringArray(R.array.prenoms_array);
+			int liste_length = liste.length;
+			
+			int max = 20000;
+			//int max = Pokemons.LIST.length;
 			
 			for (int j = 0; j < 1; j+=1 ) {
 			
@@ -215,7 +237,7 @@ public class MainActivity extends Activity {
 				int cat;
 				String mm, dd;
 				
-				while ( i < Pokemons.LIST.length ) {
+				while ( i < max ) {
 				
 				mm = "" + (rand.nextInt(12)+1); if (mm.length() < 2) mm = "0" + mm;
 				dd = "" + (rand.nextInt(28)+1); if (dd.length() < 2) dd = "0" + dd;
@@ -223,12 +245,14 @@ public class MainActivity extends Activity {
 				cat = categs[rand.nextInt(categs.length)];
 				
 				item = new Item();
-					item.setName(Pokemons.LIST[i]);
+					//item.setName(Pokemons.LIST[i]);
+					item.setName(liste[rand.nextInt(liste_length)] + " " + liste[rand.nextInt(liste_length)]);
 					item.setDate((rand.nextInt(2100-1900)+1900) + "-" + mm + "-" + dd);
 					item.setRating((rand.nextInt(10)+1)/Float.parseFloat("2.0"));
 					item.setBool(rand.nextInt(2));
 					item.setCategoryId(cat);
-					String resid = "" + (i+1);
+					//String resid = "" + (i+1);
+					String resid = "" + ( rand.nextInt(649*2) + 1 );
 					if ( resid.length() == 1 ) resid = "00" + resid;
 					if ( resid.length() == 2 ) resid = "0" + resid;
 					int res = getResources().getIdentifier("p" + resid, "drawable", "be.arno.crud");

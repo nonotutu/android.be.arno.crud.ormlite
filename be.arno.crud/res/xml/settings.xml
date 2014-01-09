@@ -2,17 +2,28 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
  
     <PreferenceCategory android:title="Databases" >
+        
         <EditTextPreference
                 android:title="Server URL"
                 android:key="serverUrl"/>
      
-   	<ListPreference android:key="dataSource"
-    	android:title="Data source"
-	    android:entries="@array/dataSource_names"
-    	android:entryValues="@array/dataSource_values"
-    	android:defaultValue="local">
-	</ListPreference>
-    
+	   	<ListPreference android:key="dataSource"
+	    	android:title="Data source"
+		    android:entries="@array/dataSource_names"
+	    	android:entryValues="@array/dataSource_values"
+	    	android:defaultValue="local">
+		</ListPreference>
+	    
+	</PreferenceCategory>
+   	
+   	<PreferenceCategory android:title="Miscallenous">
+   		
+   		<EditTextPreference
+   	    	android:title="Search step"
+   	    	android:key="searchStep"
+   	    	android:inputType="number"
+   	    	android:defaultValue="100"/>
+   	
     </PreferenceCategory>
    	
 </PreferenceScreen>

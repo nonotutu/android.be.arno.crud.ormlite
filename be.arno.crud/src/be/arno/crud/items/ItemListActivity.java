@@ -7,12 +7,15 @@ import be.arno.crud.categories.CategoriesRepository;
 import be.arno.crud.categories.Category;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -25,6 +28,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SpinnerAdapter;
@@ -36,6 +40,8 @@ public class ItemListActivity extends Activity {
 	private static final String LOG_TAG = "ItemListActivity";
 	
 	private Category category;
+	private long[] limitoffset;
+	private ArrayList<Item> items;
 	
 	// Contiendra le texte et l'ID du filtre
 	private PairIdName filter;
@@ -75,6 +81,7 @@ public class ItemListActivity extends Activity {
 	}
 
 	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,6 +90,7 @@ public class ItemListActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		assignCategoryFromBundleThenDB();
+		assignLimitoffset();
 		
 		txvwCount = (TextView)findViewById(R.id.itemList_txvwCount);
 		
@@ -115,46 +123,70 @@ public class ItemListActivity extends Activity {
 
 		
 		// ListView onLongClick, popup l'ID
-		lsvwList.setOnItemLongClickListener(new OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
-				Item item = (Item)lsvwList.getItemAtPosition(position);
-				new AlertDialog.Builder(ItemListActivity.this)
-							   .setMessage(getString(R.string.id) + " " + item.getId())
-							   .show();
-				return true;
-			}});
+		lsvwList.setOnItemLongClickListener(
+				new OnItemLongClickListener() {
+					@Override
+					public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
+						Item item = (Item)lsvwList.getItemAtPosition(position);
+						new AlertDialog.Builder(ItemListActivity.this)
+								.setMessage(getString(R.string.id) + " " + item.getId())
+								.show();
+						return true;
+		}});
+		
+		ImageButton bttn_previous = (ImageButton)findViewById(R.id.itemList_bttnPrevious);
+		bttn_previous.setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if ( limitoffset[1] > 0 ) {
+							limitoffset[1] -= limitoffset[0];
+							onStart();
+						}
+		}});
+		
+		ImageButton bttn_next = (ImageButton)findViewById(R.id.itemList_bttnNext);
+		bttn_next.setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if ( items.size() >= limitoffset[0] ) {
+							limitoffset[1] += limitoffset[0];
+							onStart();
+						}
+		}});
+		
 	}
 
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		this.setTitle(category.getName());
-		fillList(getListFromDB());
+		// this.setTitle(category.getName());
+		
+		assignListFromDB();
+		fillList(items);
 	}
 
 
-	private ArrayList<Item> getListFromDB() {
+	private void assignListFromDB() {
 
-		ArrayList<Item> items = null;
 		ItemsDataSourceSelector itemsData = new ItemsDataSourceSelector(getApplicationContext());
 		
 		switch(filter.getId()) {
 			case 1:
-				items = (ArrayList<Item>) itemsData.getOnlyWithDate_light(category.getId());
+				items = (ArrayList<Item>) itemsData.getOnlyWithDate_light(category.getId(), limitoffset);
 				break;
 			case 2:
-				items = (ArrayList<Item>) itemsData.getOnlyBool_light(category.getId(), 1);
+				items = (ArrayList<Item>) itemsData.getOnlyBool_light(category.getId(), 1, limitoffset);
 				break;
 			case 3:
-				items = (ArrayList<Item>) itemsData.getOnlyBool_light(category.getId(), 0);
+				items = (ArrayList<Item>) itemsData.getOnlyBool_light(category.getId(), 0, limitoffset);
 				break;
 			default:
-				items = (ArrayList<Item>) itemsData.getAll_light(category.getId());
-				break;
+				items = (ArrayList<Item>) itemsData.getAll_light(category.getId(), limitoffset);
+				break;				
 			}
-		return items;		
 	}
 
 	
@@ -187,7 +219,8 @@ public class ItemListActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                     	filter = filtersArrayAdapter.getItem(which);
                 		dialog.dismiss();
-                		fillList(getListFromDB());
+                		limitoffset[1] = 0;
+                		onStart();
                 }});
         /* TODO : NOT ok pour API 16
         adb.setOnDismissListener(
@@ -213,6 +246,16 @@ public class ItemListActivity extends Activity {
 	}
 
 
+	private void assignLimitoffset() {
+		Log.i(LOG_TAG, "void assignLimitoffsetFromBundle()");
+			
+		if (limitoffset == null) {	
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());			
+			limitoffset = new long[] {Long.parseLong(settings.getString("searchStep", "100")),0};
+		}
+	}
+	
+	
 	private void assignCategoryFromBundleThenDB() {
 		Log.i(LOG_TAG, "void assignCategoryFromBundleThenDB()");
 		int catId = -1;

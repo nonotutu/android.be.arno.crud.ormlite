@@ -1,26 +1,34 @@
 package be.arno.crud.categories;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import be.arno.crud.R;
 import be.arno.crud.Toaster;
 import be.arno.crud.items.ItemListActivity;
 
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
@@ -41,7 +49,7 @@ public class CategoryShowActivity extends Activity {
 	private SeekBar skbrPosition;
 	private TextView txvwPosition;
 		
-	
+	private AST_itemsCount task;
 	
 	
 	
@@ -87,6 +95,21 @@ public class CategoryShowActivity extends Activity {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.i(LOG_TAG, "void onDestroy()");
+		if ( task != null && task.getStatus() == Status.RUNNING);
+			task.cancel(true);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.i(LOG_TAG, "void onPause()");
+		if ( task != null && task.getStatus() == Status.RUNNING);
+			task.cancel(true);	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_show);
@@ -113,34 +136,12 @@ public class CategoryShowActivity extends Activity {
 		}});
 		
 		
-		/*Button bttnDelete = (Button)findViewById(R.id.categoryShow_bttnDelete);
-		bttnDelete.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if ( category != null ) {		
-					Dialog dialog = askConfirmationForDelete();
-					dialog.show();
-				}
-		}});*/
-
-		
-		/*Button bttnEdit = (Button)findViewById(R.id.categoryShow_bttnEdit);
-		bttnEdit.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if ( category != null ) {		
-					Intent intent = new Intent(getApplicationContext(),
-							                   CategoryEditActivity.class);
-					intent.putExtra("ID", category.getId() );
-					startActivity(intent);
-				}
-		}});*/
-		
-		
 		ImageButton bttnPrev = (ImageButton)findViewById(R.id.categoryShow_bttnPrev);
 		bttnPrev.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if ( task != null && task.getStatus() == Status.RUNNING )
+					task.cancel(true);
 				if ( position_in_ids > 0 ) {
 					position_in_ids = position_in_ids - 1;
 					assignCategoryFromDB(array_ids.get(position_in_ids));
@@ -153,6 +154,8 @@ public class CategoryShowActivity extends Activity {
 		bttnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if ( task != null && task.getStatus() == Status.RUNNING )
+					task.cancel(true);
 				if ( position_in_ids < array_ids.size()-1 ) {
 					position_in_ids = position_in_ids + 1;
 					assignCategoryFromDB(array_ids.get(position_in_ids));
@@ -233,10 +236,11 @@ public class CategoryShowActivity extends Activity {
 		skbrPosition.setProgress(position_in_ids);
 		txvwPosition.setText( (position_in_ids+1) + " / " + array_ids.size() );
 		
-		if ( category != null ) {		
+		if ( category != null ) {
 			txvwId.setText(""+category.getId());
 			txvwName.setText(category.getName());
-			txvwItemsCount.setText(""+category.getCountItems());
+			task = new AST_itemsCount();
+			task.execute();
 		} else {
 			clearFields();
 			Toaster.showToast(getApplicationContext(),
@@ -274,4 +278,35 @@ public class CategoryShowActivity extends Activity {
 		}}).create();
 		return d;
 	    }
+	
+	
+	private class AST_itemsCount extends AsyncTask<Void, Long, Void> {
+		
+		private long count;
+		
+		@Override
+		protected void onPreExecute() {
+			txvwItemsCount.setText("counting ...");
+		}
+		@Override
+		protected Void doInBackground(Void... v) {
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			long limit = Long.valueOf(settings.getString("searchStep", "100"));
+			count = 0;
+			long offset = 0;
+			while ( ( count += category.getCountItems(getApplicationContext(), new long[]{limit, offset}) ) == ( offset += limit ) ) {
+				publishProgress(count);
+				if ( isCancelled() ) break;
+			};
+			return null;
+		}
+		@Override
+		protected void onProgressUpdate(Long... progress) {
+			txvwItemsCount.setText(progress[0] + "...");
+		}
+		@Override
+		protected void onPostExecute(Void v) {
+			txvwItemsCount.setText("" + count);
+		}
+	}
 }

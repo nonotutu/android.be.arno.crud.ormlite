@@ -26,6 +26,8 @@
     <string name="updated_at">Updated at</string>
     <string name="synced_at">Synced at</string>
     <string name="remote_id">Remote ID</string>
+    <string name="dataSource_local">Local</string>
+    <string name="dataSource_httpServer">Server HTTP</string>    
 
     <!-- Item -->
     <string name="item">Item</string>

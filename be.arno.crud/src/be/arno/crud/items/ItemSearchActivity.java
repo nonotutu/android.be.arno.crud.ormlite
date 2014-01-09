@@ -9,8 +9,10 @@ import java.util.regex.Pattern;
 
 import be.arno.crud.R;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -35,9 +37,11 @@ import android.widget.TextView.OnEditorActionListener;
 public class ItemSearchActivity extends Activity {
 
 	private static final String LOG_TAG = "ItemSearchActivity";
-	
+
 	// Adapter de la liste des _Item_
 	private ArrayAdapter<Item> itemArrayAdapter;
+
+	private long[] limitoffset;
 
 	private EditText edtxSearch; // champ de recherche
 	private ListView lsvwList;   // liste des résultats
@@ -45,19 +49,20 @@ public class ItemSearchActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-	    switch (menuItem.getItemId()) {
-	        case android.R.id.home:
-	            finish();
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(menuItem);
-	    }
+		switch (menuItem.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(menuItem);
+		}
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 		Log.i(LOG_TAG, "void onStart()");
+		assignLimitoffset();
 		fillList();
 	}
 
@@ -67,12 +72,12 @@ public class ItemSearchActivity extends Activity {
 		setContentView(R.layout.activity_item_search);
 		Log.i(LOG_TAG, "void onCreate(Bundle)");
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		edtxSearch = (EditText)findViewById(R.id.itemSearch_edtxSearch);
 		lsvwList = (ListView)findViewById(R.id.itemSearch_lsvwList);
 		txvwCount = (TextView)findViewById(R.id.itemSearch_txvwCount);
 		final Switch swchLive = (Switch)findViewById(R.id.itemSearch_swchLive);
-		
+
 		edtxSearch.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -88,19 +93,16 @@ public class ItemSearchActivity extends Activity {
 				// uniquement si la recherche en live est activée et que l'EditText n'est pas vide
 				if ( swchLive.isChecked() == true && edtxSearch.getText().length() != 0)
 					fillList();
-			}
-		});
-		
-		
+			}});
+
+
 		ImageButton bttnSearch = (ImageButton)findViewById(R.id.itemSearch_bttnSearch);
 		bttnSearch.setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						fillList();
-					}
-				}
-			);
+					}});
 
 		Button bttnNew = (Button)findViewById(R.id.itemSearch_bttnNew);
 		bttnNew.setOnClickListener(
@@ -109,30 +111,26 @@ public class ItemSearchActivity extends Activity {
 					public void onClick(View v) {
 						Intent i = new Intent(getApplicationContext(), ItemNewActivity.class);
 						startActivity(i);
-					}
-				}
-			);
+					}});
 
 		lsvwList.setOnItemClickListener(
 				new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
 						Intent intent = new Intent(getApplicationContext(), ItemShowActivity.class);
-						
+
 						// TODO : mettre ailleurs
 						ArrayList<Integer> ids = new ArrayList<Integer>();
 						int c = itemArrayAdapter.getCount();
-						
+
 						for ( int i = 0 ; i < c ; i+=1 ) {
 							ids.add(itemArrayAdapter.getItem(i).getId());
 						}
-						
+
 						intent.putExtra("POSITION_IN_IDS", position);
 						intent.putExtra("ARRAY_IDS", ids);
 						startActivity(intent);
-					}
-				}
-			);
+					}});
 	}
 
 
@@ -145,22 +143,22 @@ public class ItemSearchActivity extends Activity {
 		txvwCount.setText(getString(R.string.items_found) + ": " + items.size());
 	}
 
-	
+
 	// Récupère la liste selon le champ de recherche depuis la DB via l'Adapter
 	private List<Item> getList(String search) {
 		Log.i(LOG_TAG, "List<Item> getList(String search)");
-		
+
 		// Retire les leading & trailing spaces
 		search = search.trim();
 
 		// Retire les double spaces
 		while ( search.contains("  ") )	search = search.replace("  ", " ");
-		
+
 		// Découpe la recherche à chaque espace
 		String[] searchs = search.split(" ");
-		
+
 		List<Item> items = new ArrayList<Item>();
-		
+
 		// Ouverture de la DB
 		ItemsDataSourceSelector itemsData = new ItemsDataSourceSelector(getApplicationContext());
 
@@ -168,14 +166,14 @@ public class ItemSearchActivity extends Activity {
 		int i = 0;
 		while ( i < searchs.length && i <= 3 ) {
 			String s = searchs[i].toString();
-			// Si le mot fait 10 caractères ...
+			/* Si le mot fait 10 caractères ...
 			if ( s.length() == 10 ) {
 				Pattern pattern = Pattern.compile("^\\d\\d\\d\\d-\\d\\d-\\d\\d$");
 				Matcher matcher = pattern.matcher(s);
 				// ... et qu'il correspond à dddd-dd-dd ...
 				if ( matcher.matches() ) {
-				    // ... va chercher les items dont la date (non vérifiée) correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsData.getSearchOnDate_light(s));
+					// ... va chercher les items dont la date (non vérifiée) correspond dans la DB et les ajoute à la liste en cours
+					items.addAll(itemsData.getSearchOnDate_light(s, limitoffset));
 				}
 			}
 			// Si le mot fait 7 caractères ...
@@ -184,30 +182,37 @@ public class ItemSearchActivity extends Activity {
 				Matcher matcher = pattern.matcher(s);
 				// ... et qu'il correspond à dddd-dd ...
 				if ( matcher.matches() ) {
-				    // ... va chercher les items dont l'année et le mois correspondent dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsData.getSearchOnYearMonth_light(s));
+					// ... va chercher les items dont l'année et le mois correspondent dans la DB et les ajoute à la liste en cours
+					items.addAll(itemsData.getSearchOnYearMonth_light(s, limitoffset));
 				}
-			}
+			}*/
 			// Si le mot fait 4 caractères ...
 			if ( s.length() == 4 ) {
 				Pattern pattern = Pattern.compile("^\\d\\d\\d\\d$");
 				Matcher matcher = pattern.matcher(s);
 				// ... et qu'il correspond à un nombre de 4 chiffres ...
 				if ( matcher.matches() ) {
-				    // ... va chercher les items dont l'année correspond dans la DB et les ajoute à la liste en cours
-					items.addAll(itemsData.getSearchOnYear_light(s));
+					// ... va chercher les items dont l'année correspond dans la DB et les ajoute à la liste en cours
+					items.addAll(itemsData.getSearchOnYear_light(s, limitoffset));
 				}
 			}
 			// Si le mot fait au moins 2 caractères ...
 			if ( s.length() >= 2 )
 				// ... va chercher les items contenant le mot dans la DB et jes ajoute à la liste en cours 
-				items.addAll(itemsData.getSearchOnName_light(s));
+				items.addAll(itemsData.getSearchOnName_light(s, limitoffset));
 			i = i + 1;
 		}
 
-		return removeDuplicates(items);
+		items = removeDuplicates(items);
+
+		// TODO : surremplit la liste pour la cropper à 500. C'est bête un peu.
+
+		// if ( limitoffset[0] > 0 )
+		//	while ( items.size() > limitoffset[0] ) items.remove(items.size() -1 );
+		return items;
+
 	}
-	
+
 	// Suppression des doublons, via une astucieuse double boucle qui, non seulement contente de m'avoir pris 2 heures de mon temps, m'a rappelé que les cours de principes de programmation étaient bien loins. Bordel.
 	private List<Item> removeDuplicates(List<Item> items) {
 		Log.i(LOG_TAG, "List<Item> removeDuplicates(List<Item>)");
@@ -223,9 +228,19 @@ public class ItemSearchActivity extends Activity {
 					j = j + 1;
 				}
 			}
-		i = i + 1;
+			i = i + 1;
 		}		
 		return items;
+	}
+
+
+	private void assignLimitoffset() {
+		Log.i(LOG_TAG, "void assignLimitoffsetFromBundle()");
+
+		if (limitoffset == null) {	
+			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());			
+			limitoffset = new long[] {Long.parseLong(settings.getString("searchStep", "100")),0};
+		}
 	}
 
 }

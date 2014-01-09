@@ -2,12 +2,12 @@
 <resources>
     <string-array
         name="dataSource_names">
-	    <item>Local</item>
-	    <item>Remote</item>
+	    <item>@string/dataSource_local</item>
+	    <item>@string/dataSource_httpServer</item>
 	</string-array>
 	<string-array
     	name="dataSource_values">
 	    <item>local</item>
-	    <item>remote</item>
+	    <item>httpServer</item>
 	</string-array>
 </resources>

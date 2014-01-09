@@ -18,21 +18,39 @@
         android:layout_alignParentTop="true" >
     </ListView>
 
-    <Button
-        android:id="@+id/itemList_bttnSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/search" />
-
     <TextView
         android:id="@+id/itemList_txvwCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/itemList_bttnSearch"
+        android:layout_above="@+id/itemList_ll"
         android:layout_alignParentRight="true"
         android:text="@string/items_found" />
 
+    <LinearLayout
+        android:id="@+id/itemList_ll"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+	    android:layout_alignParentBottom="true">
+        
+		<ImageButton
+	        android:id="@+id/itemList_bttnPrevious"
+	        android:contentDescription="@string/previous"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_previous_item"
+	        android:layout_weight="0.5" />
+	
+		<ImageButton
+	        android:id="@+id/itemList_bttnNext"
+	        android:contentDescription="@string/next"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_next_item"
+	        android:layout_weight="0.5" />
+		
+	</LinearLayout>
+    
 </RelativeLayout>

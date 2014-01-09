@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_txvwDataSource"
+        android:layout_above="@+id/main_bttnSearch"
         android:drawableLeft="@drawable/ic_action_view_as_list"
         android:text="@string/categories" />
 
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnCategories"
+        android:layout_above="@+id/main_bttnSync"
         android:drawableLeft="@drawable/ic_action_search"
         android:text="@string/search" />
     	
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnSearch"
+        android:layout_above="@+id/main_bttnFillDB"
         android:text="Sync with DB" />
 	
 	<Button
@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnSync"
+        android:layout_above="@+id/main_bttnClearDB"
         android:text="Fill Database" />
     
 	<Button
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnFillDB"
+        android:layout_above="@+id/main_bttnClose"
         android:text="Clear Database" />
 	
 	<Button
@@ -80,7 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/main_bttnClearDB"
+        android:layout_alignParentBottom="true"
         android:text="@string/close" />
 	
 </RelativeLayout>

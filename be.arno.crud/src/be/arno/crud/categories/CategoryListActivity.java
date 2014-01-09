@@ -130,7 +130,7 @@ public class CategoryListActivity extends Activity {
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position, long arg) {
 				Category category = (Category)lsvwList.getItemAtPosition(position);
 				new AlertDialog.Builder(CategoryListActivity.this)
-				               .setMessage(getString(R.string.item_count) + ": " + category.getCountItems())
+				               .setMessage(getString(R.string.item_count) + ": " /*+ category.getCountItems(getApplicationContext())*/)
 				               .show();
 				return true;
 			}});
